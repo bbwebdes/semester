@@ -137,4 +137,36 @@ export const tests: Assessment[] = [
     confirm: true,
     scope: ["Provisional date — venue and time to be announced on Amathuba"],
   },
+
+  // MAM2014S (2RA) — Real Analysis
+  {
+    id: "mam2014-test-1",
+    courseCode: "MAM2014S",
+    kind: "test",
+    title: "Test 1",
+    date: "2026-08-24",
+    start: "18:00",
+    end: "19:30",
+    venue: "TBC",
+    weight: 0.475,
+    scope: [
+      "In-person, invigilated, closed-book",
+      "Venue and syllabus to be announced closer to the time",
+    ],
+  },
+  {
+    id: "mam2014-test-2",
+    courseCode: "MAM2014S",
+    kind: "test",
+    title: "Test 2",
+    date: "2026-10-06",
+    start: "18:00",
+    end: "19:30",
+    venue: "TBC",
+    weight: 0.475,
+    scope: [
+      "In-person, invigilated, closed-book",
+      "Venue and syllabus to be announced closer to the time",
+    ],
+  },
 ];

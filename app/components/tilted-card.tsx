@@ -35,9 +35,9 @@ export function TiltedCard({ course }: { course: Course }) {
         transform:
           "perspective(800px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg))",
       }}
-      className={`flex flex-col gap-3 rounded-2xl border ${accent.border} bg-surface p-6 transition-transform duration-200 ease-out motion-safe:hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}
+      className={`flex flex-col gap-3 rounded-2xl border ${accent.border} bg-surface p-5 transition-transform duration-200 ease-out motion-safe:hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}
     >
-      <span className={`font-display text-2xl ${accent.text}`}>
+      <span className={`font-display text-xl ${accent.text}`}>
         {course.code}
       </span>
       <span className="text-base text-text">{course.title}</span>

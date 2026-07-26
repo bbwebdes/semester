@@ -12,7 +12,12 @@ import {
   isHappeningNow,
   kindLabel,
 } from "@/lib/timetable";
-import { daysUntil, findDateClashes, getNextConfirmed } from "@/lib/tests";
+import {
+  daysUntil,
+  findDateClashes,
+  getNextConfirmed,
+  hasConfirmedDate,
+} from "@/lib/tests";
 import { BentoTile } from "./components/bento-tile";
 
 function courseFor(courses: Course[], code: string) {
@@ -77,7 +82,9 @@ function NextTestTile({
   const next = now ? getNextConfirmed(tests, now) : undefined;
   const course = next ? courseFor(courses, next.courseCode) : undefined;
   const accent = accentClasses[course?.accent ?? "sta"];
-  const clashes = next ? findDateClashes(tests).get(next.date) : undefined;
+  const clashes = next
+    ? findDateClashes(tests.filter(hasConfirmedDate)).get(next.date)
+    : undefined;
 
   return (
     <BentoTile
@@ -174,7 +181,7 @@ function UrgentFlagsTile({
   sessions: Session[];
   now: Date | null;
 }) {
-  const dateClashes = findDateClashes(tests);
+  const dateClashes = findDateClashes(tests.filter(hasConfirmedDate));
   const confirmCount = tests.filter((t) => t.confirm).length;
   const unsetSlots = sessions.filter((s) => s.tbc);
   const todayLabel = now ? getTodayLabel(now) : null;

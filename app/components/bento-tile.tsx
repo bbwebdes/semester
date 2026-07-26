@@ -2,11 +2,13 @@
 
 import { useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import type { AccentToken } from "@/data/types";
 
-const glowRgb: Record<string, string> = {
+const glowRgb: Record<AccentToken | "neutral", string> = {
   sta: "76, 154, 255",
   csc: "61, 214, 140",
   mam: "192, 132, 252",
+  ra: "45, 212, 191",
   neutral: "230, 234, 240",
 };
 
@@ -18,7 +20,7 @@ export function BentoTile({
 }: {
   children: React.ReactNode;
   className?: string;
-  glow?: "sta" | "csc" | "mam" | "neutral";
+  glow?: AccentToken | "neutral";
   urgent?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);

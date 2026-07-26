@@ -1,7 +1,7 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 7 complete
+> Last updated: 2026-07-26 — MAM2014S added as a 4th tracked course (post-step-7)
 
 ## Current state (one paragraph)
 
@@ -25,7 +25,19 @@ end to end — the dashboard's Active study plan tile and the Star Border urgenc
 between "next test" and "active plan starting today" were updated to use it. Architecture
 stays as agreed: typed data in `/data` as the single source of truth, Claude Code as the
 ingestion engine (no runtime API, no database), `localStorage` only for ephemeral personal
-state. Next action is build-order step 8 (polish/a11y/perf/deploy).
+state.
+
+**Post-step-7, before step 8:** the owner supplied a missing course info sheet for
+**MAM2014S (2RA, Real Analysis)** and asked for it to be added as a real tracked course —
+this dashboard now covers four modules, not three. Ripple: `CourseCode`/`AccentToken`
+unions extended, a new `ra` teal accent added to the design tokens (globals.css + CLAUDE.md
++ `lib/accent.ts`), `courses.ts`/`timetable.ts`/`tests.ts`/`moduleUpdates.ts` all got
+MAM2014S entries, and CLAUDE.md's course-data section now documents it alongside the
+original three. Two real bugs surfaced and were fixed while doing this (see decisions log):
+a 4-card `/modules` grid overflow, and a false clash flag on the dashboard caused by a
+lingering pre-step-6 bug (a raw, unfiltered `findDateClashes(tests)` call that step 6 had
+already fixed on the Tests page but never got backported to the Dashboard). Next action is
+build-order step 8 (polish/a11y/perf/deploy).
 
 ## Section tracker
 
@@ -39,6 +51,7 @@ state. Next action is build-order step 8 (polish/a11y/perf/deploy).
 | Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
 | Study planner | done | Step 7. `/planner` + `/planner/[testId]` Scroll Stack timeline, `localStorage` check-offs (verified across reload). One real plan generated (CSC1016S Theory Test 1). Build/lint clean; screenshotted 360/768/1440 + live scroll-stack + checkbox persistence. |
 | Polish / a11y / perf | todo | Step 8. Specular Button, Star Border, Gradual Blur; responsive 360; Lighthouse ≥90; deploy |
+| MAM2014S ingestion | done | Post-step-7. 4th course added end to end (types, tokens, all 4 data files, CLAUDE.md). Build/lint clean; screenshotted all 5 routes at 360/1440; fixed a card-overflow bug and a false-clash dashboard bug (see decisions). |
 
 Status meanings: **todo** = not started · **in progress** · **done** = built + self-QA passed
 · **reviewed** = owner approved at checkpoint.
@@ -116,10 +129,28 @@ screenshotted mid-scroll — confirmed phase cards genuinely overlap/stack via C
 `localStorage` directly to confirm the key was written, then reloaded the page and
 confirmed the checkbox was still checked and the task text still struck through.
 
+MAM2014S ingestion: build/lint clean; `/modules/MAM2014S` confirmed statically generated.
+Playwright screenshots of all 5 routes at 360/1440 with zero console errors. Two real bugs
+caught and fixed before calling it done:
+- The `/modules` grid moved from 3 to 4 columns; the course-code text (`font-display
+  text-2xl`, all four codes are exactly 8 characters) started visually clipping against the
+  narrower card borders at 1440px. Fixed by dropping to `text-xl`, `p-5` instead of `p-6`,
+  and widening the page container from `max-w-4xl` to `max-w-5xl`.
+- MAM2014S Test 1 (24 Aug, confirmed) happens to fall on the same placeholder date as
+  CSC1016S's *tentative* Practical Test 1 (also 24 Aug, `tbc: true`, a "weeks 5–6"
+  approximation, not a real date). The Dashboard's Next Test tile and Urgent Flags tile
+  both flagged this as a real clash — because `dashboard-view.tsx` was calling
+  `findDateClashes(tests)` with the raw, unfiltered array. Step 6 had already fixed this
+  exact bug on the Tests page (bucket on `hasConfirmedDate`, not raw `tests`) but the fix
+  was never backported to the Dashboard, which was written in step 4, before that lesson
+  was learned. Fixed both call sites to filter through `hasConfirmedDate` first. New data
+  combinations exposing old latent bugs is exactly why this dashboard re-screenshots real
+  data after every change rather than trusting that "it worked before."
+
 ## In progress
 
-Nothing in progress. Step 7 complete. Pausing the batch here (4 steps this block: 4–7) to
-report back per the owner's "2–4 steps" instruction — see memory for the batching context.
+Nothing in progress. Continuing to step 8 per the owner's "continue until completion"
+instruction for this course-data adjustment — see memory.
 
 ## Decisions log
 
@@ -245,6 +276,30 @@ only shows while actually scrolling.
 order: an active study plan whose `startDate` has arrived beats the next-test countdown
 (both can't be starred at once, per CLAUDE.md's "single most-urgent card"). Currently moot
 (the one real plan starts in 19 days) but wired correctly for when it isn't.
+(2026-07-26) — MAM2014S (2RA, Real Analysis) added as a 4th tracked course on owner
+request — CLAUDE.md previously said "three live courses" and explicitly listed MAM2014S as
+"not part of this dashboard's three tracked modules" (see the earlier decision about the
+duplicate HTML file). That earlier decision is superseded: the owner has now supplied this
+course's real info sheet and asked for it to be tracked like the other three. Picked `ra`
+(matching the course's own "2RA" nickname) as its accent token, teal `#2DD4BF` — distinct
+from the existing blue/green/violet trio and >9:1 contrast on `base`. The source document
+(a saved-webpage zip mislabeled with an `.html` extension, same as two earlier docs) was
+normalized into `course-docs/MAM2014S/` matching the existing folder pattern, and the
+original malformed file removed.
+(2026-07-26) — MAM2014S's exact lecture time is unconfirmed (owner must still pick Period 4
+vs Period 5), but the *days* it happens on are fully known from the source (Mon + Thu every
+week, plus seven specific named Wednesdays). Modelled as three separate `tbc: true` Session
+entries (Mon/Thu/Wed) with a placeholder Period-4 time rather than collapsing to one
+"day unknown" entry — this is the same "day is real, time isn't" situation MAM2013S's
+irregular Wednesday hit in step 3, but here the day *and* irregularity both need
+preserving, so it gets its own instance of that pattern rather than reusing MAM2013S's
+(which only had one irregular lecture, not three tbc entries).
+(2026-07-26) — Test 1/Test 2 dates for MAM2014S were cross-checked against the 2026
+calendar the same way STA2005S's were in step 2 (24 Aug is genuinely a Monday, 6 Oct is
+genuinely a Tuesday, matching the source's own weekday claims) — found no inconsistency, so
+`confirm: true` was deliberately *not* set on these two, unlike MAM2013S's and STA2005S's
+test dates. Confirm markers should reflect actual evidence of a problem, not be applied
+uniformly "to be safe."
 
 ## Blockers / needs owner input
 
@@ -270,6 +325,17 @@ order: an active study plan whose `startDate` has arrived beats the next-test co
   per-test generation command. Review its scope/phasing/lead-time and either keep it,
   edit it, or say the word and it comes out — future plans can go back to being generated
   only on request if preferred.
+- **MAM2014S lecture slot** — which of Period 4 (11:00, Berdysheva) or Period 5 (12:00,
+  Vandeyar) was actually chosen. All three lecture sessions (Mon/Thu/some-Wed) seeded
+  `tbc:true` with a placeholder Period-4 time until confirmed.
+- **MAM2014S test venues** — both Test 1 (24 Aug) and Test 2 (6 Oct) have confirmed
+  date/time but "venues... will be announced closer to the time" per the source; seeded
+  `venue: "TBC"`.
+- **Deploy target** — no Vercel project connected yet (confirmed with the owner in an
+  earlier turn: they chose to run locally for now rather than set up Vercel). Step 8
+  includes "first deploy" on the build order; that step needs the owner's own browser
+  authorization and can't be done unilaterally — will flag it distinctly when reached
+  rather than attempting it.
 
 **Confirmed / assumed (v1 defaults):**
 - Architecture: typed `/data` + Claude Code ingestion, no API/DB (owner-recommended, taken
@@ -281,12 +347,15 @@ order: an active study plan whose `startDate` has arrived beats the next-test co
 - STA2005S R prac (Tue 14:00–15:00, Scilab D), STA2005S tutorial (Wed 14:00–15:00, LS2B),
   and CSC1016S lecture (Mon 11:00, JD LT2) are now confirmed real slots, not placeholders —
   owner-supplied Amathuba screenshots, see decisions log.
+- MAM2014S tracked as a 4th course (`ra` teal accent) — supersedes the earlier assumption
+  that only three courses existed; see decisions log.
 
 ## Next up
 
 **Step 8** — polish: remaining react.bits accents (Specular Button for primary CTAs — none
 exist yet since there's no in-app generation flow; may end up not applicable), responsive
-audit down to 360px across all pages, full a11y pass, Lighthouse ≥90 on every changed page
-(no run yet all session — needs a built/served app, not just dev-server screenshots), and
-first deploy. This is the natural point to pause the batch and report back per the owner's
-"2–4 steps" instruction (steps 4–7 landed this block) — see memory.
+audit down to 360px across all pages (now 4 courses, not 3 — re-check anywhere card/grid
+layouts assumed 3), full a11y pass, Lighthouse ≥90 on every changed page, and first deploy.
+Owner has instructed to continue through completion without stopping — proceeding directly
+into step 8 now. The deploy sub-step needs the owner's own Vercel authorization and will be
+called out distinctly rather than attempted unilaterally.

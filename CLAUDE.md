@@ -18,7 +18,7 @@ or generate coursework.
 
 ## Owner + real course data (source of truth)
 
-The three live courses for this semester. Full outlines live in `/course-docs`; these are
+The four live courses for this semester. Full outlines live in `/course-docs`; these are
 the transcription source. **Where the source is internally inconsistent (see the STA date
 note), flag it for owner confirmation — do not silently pick one.**
 
@@ -54,6 +54,20 @@ note), flag it for owner confirmation — do not silently pick one.**
 - Assessments: CR = 0.5·T1 + 0.5·T2. Final = max(0.6·E + 0.4·CR, 0.8·E + 0.2·CR).
   DP: CR ≥20% and ≥80% tutorial attendance.
 - Dates: Test 1 — 2 Sep (time/venue TBC). Test 2 — 7 Oct (time/venue TBC).
+
+**MAM2014S (2RA) — Real Analysis** (accent: `ra`, teal)
+- Convenor: Morgan Vandeyar (morgan.vandeyar@uct.ac.za, M3.24.2). Lecturer: Assoc Prof
+  Elena Berdysheva (elena.berdysheva@uct.ac.za, M3.13).
+- Lectures: two slots on offer, owner picks one and sticks to it — Period 4 (11:00–11:45)
+  or Period 5 (12:00–12:45), both M320 (`tbc` until owner picks). Mon + Thu every week,
+  plus these specific Wednesdays: 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct.
+  Tutorial (compulsory, confirmed via Amathuba sign-up): Fri 14:00–15:00, MCB Sem A.
+- Assessments: class record C = 0.475·T1 + 0.475·T2 + 0.05·self-assessment-quiz avg
+  (quizzes run ~biweekly, dates not yet announced). Final = max(0.8·E + 0.2·C, 0.6·E +
+  0.4·C). DP: full tutorial attendance (≤2 permitted absences), wrote both tests, test
+  average ≥30%.
+- Dates: Test 1 — Mon 24 Aug, 18:00–19:30. Test 2 — Tue 6 Oct, 18:00–19:30. Venues TBC
+  for both (no internal inconsistency in this source — weekdays match the 2026 calendar).
 
 **Known clash to surface:** STA2005S Test 1 and MAM2013S Test 1 are both dated **2 Sep**.
 The Tests view must flag same-day/overlapping assessments — this is the flagship example
@@ -117,6 +131,7 @@ Module accents (used identically across timetable, cards, tests, plans):
 - `sta`  #4C9AFF — STA2005S (blue)
 - `csc`  #3DD68C — CSC1016S (green)
 - `mam`  #C084FC — MAM2013S (violet)
+- `ra`   #2DD4BF — MAM2014S (teal)
 
 Semantic:
 - `accent` #F5A524 — amber. Primary CTAs ("Generate study plan"), and the "start
@@ -273,7 +288,7 @@ open owner questions. Keep it terse.
 1. Scaffold Next.js 14 + TS + Tailwind; wire tokens + both Google Fonts; nav shell (Pill
    Nav + Bottom Dock) + placeholder routes. Commit.
 2. Data layer: `/data/types.ts` + typed `courses`, `timetable`, `tests`, `moduleUpdates`,
-   `studyPlans`; seed from the three real courses in `/course-docs` (flag inconsistencies
+   `studyPlans`; seed from the four real courses in `/course-docs` (flag inconsistencies
    with `confirm: true`). Commit.
 3. Timetable weekly grid — colour-coded, `tbc` placeholders, clash detection, now/next.
    Commit.

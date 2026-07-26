@@ -115,4 +115,37 @@ export const courses: Course[] = [
       "At least 80% tutorial/workshop attendance",
     ],
   },
+  {
+    code: "MAM2014S",
+    title: "MAM2014S (2RA) — Real Analysis",
+    accent: "ra",
+    convenor: {
+      name: "Morgan Vandeyar",
+      role: "Course Convenor",
+      email: "morgan.vandeyar@uct.ac.za",
+      office: "M3.24.2",
+    },
+    contacts: [
+      {
+        name: "Assoc Prof Elena Berdysheva",
+        role: "Lecturer",
+        email: "elena.berdysheva@uct.ac.za",
+        office: "M3.13",
+      },
+    ],
+    lectureInfo:
+      "Two lecture slots on offer — pick one and stick to it: Period 4 (11:00–11:45) or Period 5 (12:00–12:45), both M320 (tbc). Mon + Thu every week, plus some Wednesdays. Tutorial (compulsory): Fri 14:00–15:00, MCB Sem A.",
+    assessmentWeights: [
+      { label: "Test 1 (of class record)", weight: 0.475 },
+      { label: "Test 2 (of class record)", weight: 0.475 },
+      { label: "Self-assessment quizzes (of class record)", weight: 0.05 },
+    ],
+    finalMarkFormula:
+      "Class record (C) = 0.475 × Test 1 + 0.475 × Test 2 + 0.05 × quiz average. Final = max(0.8 × exam + 0.2 × C, 0.6 × exam + 0.4 × C)",
+    dpRules: [
+      "Full tutorial attendance (up to 2 permitted absences)",
+      "Wrote both class tests",
+      "Test average of at least 30%",
+    ],
+  },
 ];

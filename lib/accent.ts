@@ -22,4 +22,10 @@ export const accentClasses: Record<
     bg: "bg-mam/10",
     ring: "ring-mam",
   },
+  ra: {
+    border: "border-ra/70",
+    text: "text-ra",
+    bg: "bg-ra/10",
+    ring: "ring-ra",
+  },
 };

@@ -1,6 +1,6 @@
-export type CourseCode = "STA2005S" | "CSC1016S" | "MAM2013S";
+export type CourseCode = "STA2005S" | "CSC1016S" | "MAM2013S" | "MAM2014S";
 
-export type AccentToken = "sta" | "csc" | "mam";
+export type AccentToken = "sta" | "csc" | "mam" | "ra";
 
 export type Contact = {
   name: string;

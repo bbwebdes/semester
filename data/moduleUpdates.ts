@@ -33,4 +33,20 @@ export const moduleUpdates: Update[] = [
     body: "Sign up for one weekly tutorial/workshop (Thu or Fri, 14:00–16:00) on Amathuba by 22 July, 11pm — after that, unsigned-up students are auto-assigned to a group. No tutorials in week 1; they start in week 2.",
     source: "MAM2013S Course Information (Amathuba)",
   },
+  {
+    courseCode: "MAM2014S",
+    date: "2026-07-27",
+    kind: "reminder",
+    title: "Pick a lecture slot and stick to it",
+    body: "Two lecture slots run in parallel at slightly different paces — Period 4 (11:00, Assoc Prof Berdysheva) or Period 5 (12:00, Morgan Vandeyar), both M320. Choose whichever fits your other courses and stay with it for the semester.",
+    source: "MAM2014S Course Information (Amathuba)",
+  },
+  {
+    courseCode: "MAM2014S",
+    date: "2026-07-27",
+    kind: "reminder",
+    title: "Self-assessment quizzes run ~every two weeks",
+    body: "Online quizzes on Amathuba, individual work (notes/tutorials okay, generative AI discouraged), strict deadlines with no extensions. Worth 5% of the class record — low weight, but a good way to stay on top of content.",
+    source: "MAM2014S Course Information (Amathuba)",
+  },
 ];
