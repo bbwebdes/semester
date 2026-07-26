@@ -1,10 +1,8 @@
-import { PagePlaceholder } from "../components/page-placeholder";
+import { courses } from "@/data/courses";
+import { tests } from "@/data/tests";
+import { studyPlans } from "@/data/studyPlans";
+import { TestsView } from "./tests-view";
 
 export default function TestsPage() {
-  return (
-    <PagePlaceholder
-      title="Tests"
-      step="Countdown list with clash + confirm flags lands in build-order step 6."
-    />
-  );
+  return <TestsView tests={tests} courses={courses} studyPlans={studyPlans} />;
 }

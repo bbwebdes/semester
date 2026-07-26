@@ -1,11 +1,11 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 5 complete
+> Last updated: 2026-07-26 — step 6 complete
 
 ## Current state (one paragraph)
 
-Steps 1–5 are built. Owner authorized batching steps 4+ back-to-back this session without
+Steps 1–6 are built. Owner authorized batching steps 4+ back-to-back this session without
 stopping for review each time (see memory); still committing/pushing and updating this file
 after every step per CLAUDE.md's git discipline, just not pausing. Steps 1–2: Next.js 16 +
 Tailwind v4 scaffold with tokens/fonts/nav, and the typed `/data` layer seeded from
@@ -20,10 +20,15 @@ shows convenor/contacts, a real per-course schedule (pulled from `/data/timetabl
 hardcoded), assessment weights + final-mark formula, DP rules, and a soonest-first
 `moduleUpdates` feed with past items visually de-emphasised. `lib/tests.ts` and
 `lib/accent.ts` hold shared countdown/clash and module-accent helpers respectively, reused
-across dashboard/modules (and soon tests/planner). Architecture stays as agreed: typed data
-in `/data` as the single source of truth, Claude Code as the ingestion engine (no runtime
-API, no database), `localStorage` only for ephemeral personal state. Next action is
-build-order step 6 (test dates).
+across dashboard/modules/tests. Step 6: `/tests` lists every assessment soonest-first with
+a live countdown, weight, venue, `confirm` markers, and a study-plan link (none exist yet);
+the flagged 2 Sep STA/MAM clash surfaces as both a page-top banner and per-row badges; a
+separate "Date tentative / TBC" section holds anything with `tbc: true` — including the two
+CSC practical tests, which carry a placeholder week-start `date` but aren't real confirmed
+dates (a real bug caught during QA — see decisions log). Architecture stays as agreed:
+typed data in `/data` as the single source of truth, Claude Code as the ingestion engine
+(no runtime API, no database), `localStorage` only for ephemeral personal state. Next
+action is build-order step 7 (study planner).
 
 ## Section tracker
 
@@ -34,7 +39,7 @@ build-order step 6 (test dates).
 | Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. |
 | Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
 | Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
-| Test dates | todo | Step 6. `/tests` list, countdowns, clash flags, `confirm` markers, plan links |
+| Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
 | Study planner | todo | Step 7. `/planner` + Scroll Stack timeline; generation command; localStorage check-offs |
 | Polish / a11y / perf | todo | Step 8. Specular Button, Star Border, Gradual Blur; responsive 360; Lighthouse ≥90; deploy |
 
@@ -94,9 +99,21 @@ timetable's now/next — it will only refresh on the next push+redeploy, not con
 Low-stakes (cosmetic de-emphasis only) and consistent with the project's no-live-backend,
 redeploy-on-push content model, so not worth splitting into a client sub-component now.
 
+Step 6 (`/tests`): build/lint clean; Playwright screenshots at 360/768/1440. Caught a real
+bug pre-ship: the two CSC1016S practical tests carry a placeholder week-start `date` (e.g.
+`2026-08-24` for "weeks 5–6") alongside `tbc: true`, but the initial sort/countdown logic
+only checked for the *absence* of a `date` to decide what counts as unconfirmed — so a
+tentative placeholder date was being sorted into the main soonest-first list and one of
+them even won the single "most urgent" Star Border slot, overstating confidence in a date
+that isn't real. Fixed by bucketing on `tbc` instead of on `date` presence: the main list,
+the clash detector, and the "most urgent" pick now all only consider `!tbc` assessments;
+anything with `tbc: true` (whether or not it has a placeholder date) goes in a merged
+"Date tentative / TBC" section that shows "Approx. week of ⟨date⟩" when a placeholder date
+exists and "No date announced yet" when it doesn't.
+
 ## In progress
 
-Nothing in progress. Step 5 complete; continuing straight to step 6 (batched, see memory).
+Nothing in progress. Step 6 complete; continuing straight to step 7 (batched, see memory).
 
 ## Decisions log
 
@@ -194,6 +211,13 @@ involved, going forward.
 `courseCode`, sorted by weekday then start time) rather than re-describing venues/times as
 freeform text — keeps a single source of truth; a timetable data edit automatically shows
 up on the matching module page too.
+(2026-07-26) — Assessment "is this confirmed" logic (step 6) settled on branching purely on
+`tbc`, never on whether `date` happens to be present — a placeholder/approximate date with
+`tbc: true` must never be treated as confirmed. `lib/tests.ts`'s existing
+`hasConfirmedDate`/`getUpcoming`/`getNextConfirmed` already did this correctly; the bug was
+in `/tests`'s own page-level bucketing duplicating that logic slightly wrong. Established
+as a standing rule: any new code that buckets assessments by confidence should call the
+`lib/tests.ts` helpers rather than re-deriving the check inline.
 
 ## Blockers / needs owner input
 
@@ -228,7 +252,9 @@ up on the matching module page too.
 
 ## Next up
 
-**Step 6** — test dates: `/tests` list, soonest-first, with countdowns, weight, venue, a
-link to a study plan if one exists (none yet), same-day clash flags (reusing
-`lib/tests.ts`'s `findDateClashes`), and `confirm` markers. Continuing immediately
-(batched — see memory).
+**Step 7** — study planner: `/planner` list + `/planner/[testId]` Scroll Stack timeline;
+wire the generation command described in CLAUDE.md; `localStorage` task check-offs. No
+study plan has been generated yet (that's a separate, scope-aware command run per test as
+one approaches), so this step is mostly building the *infrastructure* — the list/detail
+pages, the timeline component, and the check-off persistence — against `studyPlans.ts`
+while it's still an empty array. Continuing immediately (batched — see memory).
