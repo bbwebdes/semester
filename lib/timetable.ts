@@ -104,12 +104,14 @@ function weekPosition(day: Weekday, time: string): number {
   return weekOrder.indexOf(day) * 24 * 60 + minutesSince("00:00", time);
 }
 
-export function findNextSession(
-  sessions: Session[],
-  now: Date,
-): Session | undefined {
+/**
+ * Confirmed sessions still to come this week, soonest first, wrapping around to
+ * next Monday if nothing remains before the end of Saturday. A session in progress
+ * right now is excluded (see isHappeningNow for that).
+ */
+export function getUpcomingSessions(sessions: Session[], now: Date): Session[] {
   const confirmed = sessions.filter(isConfirmed);
-  if (confirmed.length === 0) return undefined;
+  if (confirmed.length === 0) return [];
 
   const todayLabel = getTodayLabel(now);
   const nowMinutesOfDay = differenceInMinutes(
@@ -120,19 +122,26 @@ export function findNextSession(
     ? weekOrder.indexOf(todayLabel) * 24 * 60 + nowMinutesOfDay
     : 6 * 24 * 60 + nowMinutesOfDay; // Sunday: after Saturday, before Monday wrap
 
-  const upcoming = confirmed
+  const withPosition = confirmed
     .filter((s) => !isHappeningNow(s, now))
-    .map((s) => ({ session: s, position: weekPosition(s.day, s.start) }))
+    .map((s) => ({ session: s, position: weekPosition(s.day, s.start) }));
+
+  const upcoming = withPosition
     .filter((s) => s.position >= nowPosition)
     .sort((a, b) => a.position - b.position);
 
-  if (upcoming.length > 0) return upcoming[0].session;
-
-  const earliest = confirmed
-    .map((s) => ({ session: s, position: weekPosition(s.day, s.start) }))
+  const wrapped = withPosition
+    .filter((s) => s.position < nowPosition)
     .sort((a, b) => a.position - b.position);
 
-  return earliest[0]?.session;
+  return [...upcoming, ...wrapped].map((s) => s.session);
+}
+
+export function findNextSession(
+  sessions: Session[],
+  now: Date,
+): Session | undefined {
+  return getUpcomingSessions(sessions, now)[0];
 }
 
 export function formatTimeRange(start: string, end: string): string {

@@ -26,7 +26,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "08:00 Mon–Fri, PD Hahn 2. Plus one 1-hour tutorial and one 1-hour R computer prac per week (slots chosen in week 1, tbc).",
+      "08:00 Mon–Fri, PD Hahn 2. Plus tutorial Wed 14:00–15:00 (LS2B) and R computer prac Tue 14:00–15:00 (Scilab D).",
     assessmentWeights: [
       { label: "Test 1", weight: 0.25 },
       { label: "Test 2", weight: 0.25 },
@@ -77,7 +77,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "One face-to-face lecture/week, Mon–Wed, JD LT2 (Period 4 or 5 — owner picks day + period). Plus one 2-hour practical session per week (slot tbc).",
+      "Lecture Mon 11:00–11:45 (Period 4), JD LT2. Plus one 2-hour practical session per week (slot tbc).",
     assessmentWeights: [
       { label: "Practical average", weight: 0.1 },
       { label: "Theory test average", weight: 0.15 },
@@ -103,7 +103,7 @@ export const courses: Course[] = [
     },
     contacts: [],
     lectureInfo:
-      "Mon, some Wed, Fri, 12:00–13:00, M320. Tutorials/workshops (compulsory): Thu 14:00–16:00 or Fri 14:00–16:00 — owner signs up for one (tbc). None in week 1.",
+      "Mon, some Wed, Fri, 12:00–13:00, M320. Tutorial/workshop (compulsory): Thu 14:00–16:00, venue TBC. None in week 1.",
     assessmentWeights: [
       { label: "Test 1 (of class record)", weight: 0.5 },
       { label: "Test 2 (of class record)", weight: 0.5 },

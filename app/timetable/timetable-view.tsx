@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { Course, Session, Weekday } from "@/data/types";
+import { accentClasses } from "@/lib/accent";
 import {
   findClashes,
   findNextSession,
@@ -71,12 +72,6 @@ function buildTableRows(confirmed: Session[]): TableRow[] {
   }
   return rows;
 }
-
-const accentClasses: Record<Course["accent"], { border: string; text: string; bg: string; ring: string }> = {
-  sta: { border: "border-sta/70", text: "text-sta", bg: "bg-sta/10", ring: "ring-sta" },
-  csc: { border: "border-csc/70", text: "text-csc", bg: "bg-csc/10", ring: "ring-csc" },
-  mam: { border: "border-mam/70", text: "text-mam", bg: "bg-mam/10", ring: "ring-mam" },
-};
 
 function SessionContent({
   session,

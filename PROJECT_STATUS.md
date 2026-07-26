@@ -1,11 +1,13 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 3 complete
+> Last updated: 2026-07-26 — step 4 complete
 
 ## Current state (one paragraph)
 
-Steps 1–3 are built. Step 1: Next.js 16 (App Router, TypeScript, Tailwind v4) scaffolded,
+Steps 1–4 are built. Owner authorized batching steps 4+ back-to-back this session without
+stopping for review each time (see memory); still committing/pushing and updating this
+file after every step per CLAUDE.md's git discipline, just not pausing. Step 1: Next.js 16 (App Router, TypeScript, Tailwind v4) scaffolded,
 design tokens + both Google Fonts wired, nav shell with placeholder routes. Step 2: the
 data layer — `/data/types.ts` + `courses`/`timetable`/`tests`/`moduleUpdates`/`studyPlans`
 seeded from the real outlines in `/course-docs`. Step 3: `/timetable` now renders real
@@ -18,8 +20,15 @@ genuinely isn't chosen yet (CSC1016S practical). The owner supplied real chosen-
 screenshots from Amathuba (`course-docs/*.png`) this session, which resolved three of the
 four previously-`tbc` slots — see decisions log. Architecture stays as agreed: typed data
 in `/data` as the single source of truth, Claude Code as the ingestion engine (no runtime
-API, no database), `localStorage` only for ephemeral personal state. Next action is
-build-order step 4 (dashboard home / Magic Bento).
+API, no database), `localStorage` only for ephemeral personal state. Step 4: `/` now
+renders a real Magic-Bento-style dashboard (`app/dashboard-view.tsx` + a shared
+`BentoTile` with a cursor-following hover glow and an amber "Star Border" pulse reserved for
+the single most urgent tile) — Next class, Next test + live countdown, This week (next 4
+sessions), Urgent flags (date clashes, `confirm` counts, unset timetable slots), and an
+honest empty state for Active study plan (no plans exist until step 7). `lib/tests.ts`
+adds date-based countdown/clash helpers alongside `lib/timetable.ts`; `lib/accent.ts` now
+centralises the module-accent class map so it isn't duplicated per page. Next action is
+build-order step 5 (modules).
 
 ## Section tracker
 
@@ -28,7 +37,7 @@ build-order step 4 (dashboard home / Magic Bento).
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
 | Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. |
-| Dashboard home | todo | Step 4. Magic Bento — next class, next test + countdown, active plan, this week, urgent flags |
+| Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
 | Modules | todo | Step 5. `/modules` Tilted Cards + `/modules/[code]` detail + update feed |
 | Test dates | todo | Step 6. `/tests` list, countdowns, clash flags, `confirm` markers, plan links |
 | Study planner | todo | Step 7. `/planner` + Scroll Stack timeline; generation command; localStorage check-offs |
@@ -60,9 +69,19 @@ the step 1/2 caveat about no browser tool being available. Verified on `/timetab
 No Lighthouse run yet (needs a full run against a built/served app, deferred to a later
 polish-adjacent step); flagged for step 8.
 
+Step 4 (`/`): build/lint clean; Playwright screenshots at 360/768/1440 confirmed all five
+tiles render with real data (verified the flagged 2 Sep STA/MAM clash, the 4 `confirm`
+dates, and the 1 unset timetable slot all surface correctly in Urgent flags). Noticed the
+360px `fullPage` screenshot appeared to show the fixed BottomDock overlapping the "Urgent
+flags" tile — confirmed via a real scrolled-viewport screenshot that this is a Playwright
+`fullPage`-with-`position:fixed` compositing artifact, not a real bug (the `pb-24` bottom
+padding from step 1 already reserves room for the dock). Reduced-motion re-checked: the
+hover spotlight is a plain opacity fade (not gated, since it isn't motion), the tile-scale
+hover and the Star Border pulse are both gated behind `useReducedMotion`.
+
 ## In progress
 
-Nothing in progress. Step 3 complete; awaiting review before step 4 (dashboard home).
+Nothing in progress. Step 4 complete; continuing straight to step 5 (batched, see memory).
 
 ## Decisions log
 
@@ -128,6 +147,23 @@ clash-detection banner — moot for now since the current real data has no actua
 colour combination before treating the step as QA-passed — see quality gates. Caught a real
 sub-3:1 border-contrast bug this way; treating this check as a standing per-step habit
 going forward, not a one-off.
+(2026-07-26) — Owner authorized batching build-order steps 4 onward without the usual
+stop-for-review gate after each one, given spare session budget on the Pro plan — see the
+`semester-batch-mode-2026-07-26` memory. Git discipline (commit + push + update this file
+every step) still applies unchanged; only the pause-and-ask-for-review part is suspended
+for this session.
+(2026-07-26) — Dashboard's "Active study plan" tile shows an honest empty state (plain
+text + a link to `/planner`) rather than a fake "Generate study plan" CTA button — there's
+no in-app generation flow (plans are produced by a separate Claude Code command per
+CLAUDE.md, not a runtime API call), so a clickable-looking generate button would be a false
+affordance.
+(2026-07-26) — Magic Bento's hover "spotlight" is implemented as a cursor-tracked CSS
+radial-gradient (position set via a ref + `onPointerMove`, no React re-render) rather than
+pulling in the actual react.bits component — same hand-built-to-tokens approach already
+used for Pill Nav/Bottom Dock in step 1. The one animated exception, the amber Star Border
+pulse on the most-urgent tile, uses a plain looping opacity animation rather than a
+conic-gradient spin, since the standard "animated gradient border via masked conic-gradient"
+trick needs `@property` (patchy browser support) — simpler and equally readable.
 
 ## Blockers / needs owner input
 
@@ -162,6 +198,6 @@ going forward, not a one-off.
 
 ## Next up
 
-**Step 4** — dashboard home: Magic Bento tiles (next class, next test + countdown, active
-study plan, this week, urgent flags) reading from all of `/data`. Awaiting review of step 3
-before starting.
+**Step 5** — modules: `/modules` grid of Tilted Cards (accent-bordered) + `/modules/[code]`
+detail (convenor/contacts/weights/DP rules + a soonest-first `moduleUpdates` feed, past
+items dimmed). Continuing immediately (batched — see memory).
