@@ -1,0 +1,92 @@
+export type CourseCode = "STA2005S" | "CSC1016S" | "MAM2013S";
+
+export type AccentToken = "sta" | "csc" | "mam";
+
+export type Contact = {
+  name: string;
+  role: string;
+  email: string;
+  office?: string;
+  note?: string;
+};
+
+export type AssessmentWeight = {
+  label: string;
+  weight: number;
+};
+
+export type Course = {
+  code: CourseCode;
+  title: string;
+  accent: AccentToken;
+  convenor: Contact;
+  contacts: Contact[];
+  lectureInfo: string;
+  assessmentWeights: AssessmentWeight[];
+  finalMarkFormula: string;
+  dpRules: string[];
+};
+
+export type Weekday = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat";
+
+export type SessionKind = "lecture" | "tutorial" | "prac";
+
+export type Session = {
+  courseCode: CourseCode;
+  kind: SessionKind;
+  day: Weekday;
+  start: string;
+  end: string;
+  venue: string;
+  tbc?: boolean;
+  note?: string;
+};
+
+export type AssessmentKind = "test" | "practest" | "assignment" | "exam";
+
+export type Assessment = {
+  id: string;
+  courseCode: CourseCode;
+  kind: AssessmentKind;
+  title: string;
+  date?: string;
+  start?: string;
+  end?: string;
+  venue?: string;
+  weight?: number;
+  scope?: string[];
+  confirm?: boolean;
+  tbc?: boolean;
+};
+
+export type UpdateKind = "date" | "reminder" | "info-session" | "announcement";
+
+export type Update = {
+  courseCode: CourseCode;
+  date: string;
+  kind: UpdateKind;
+  title: string;
+  body: string;
+  source?: string;
+};
+
+export type StudyPlanPhase = {
+  date: string;
+  focus: string;
+  tasks: string[];
+};
+
+export type StudyPlanResource = {
+  label: string;
+  href?: string;
+};
+
+export type StudyPlan = {
+  id: string;
+  courseCode: CourseCode;
+  testId: string;
+  scope: string[];
+  startDate: string;
+  phases: StudyPlanPhase[];
+  resources: StudyPlanResource[];
+};

@@ -1,31 +1,30 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 1 complete
+> Last updated: 2026-07-26 — step 2 complete
 
 ## Current state (one paragraph)
 
-Step 1 is built: Next.js 16 (App Router, TypeScript, Tailwind v4) scaffolded in place,
-design tokens wired via a Tailwind v4 `@theme` block in `app/globals.css` (base/surface/
-surface-2/line/text/muted, module accents sta/csc/mam, semantic accent/danger/ok, and the
-12/14/16/20/28/40/64 type scale), Space Grotesk (`font-display`) + Inter (`font-sans`)
-loaded via `next/font/google`, and a nav shell (`PillNav` desktop top, `BottomDock` mobile
-bottom) with placeholder routes for `/`, `/timetable`, `/modules`, `/planner`, `/tests`.
-The home page proves tokens/fonts render correctly (module accent swatches, amber CTA,
-danger flag, display-scale numeral). `prefers-reduced-motion` is handled globally in
-`globals.css` (collapses animation/transition durations). Architecture stays as agreed:
-typed data in `/data` as the single source of truth (not yet created — step 2), Claude
-Code as the ingestion engine (no runtime API, no database), `localStorage` only for
-ephemeral personal state. Three real courses (STA2005S, CSC1016S, MAM2013S) are the seed
-content; their outlines are in `/course-docs`. Next action is build-order step 2 (data
-layer).
+Steps 1–2 are built. Step 1: Next.js 16 (App Router, TypeScript, Tailwind v4) scaffolded,
+design tokens + both Google Fonts wired, nav shell with placeholder routes. Step 2: the
+data layer now exists — `/data/types.ts` defines `Course`, `Session`, `Assessment`,
+`Update`, `StudyPlan` (plus supporting `Contact`/`AssessmentWeight`/etc.), and
+`/data/courses.ts`, `/data/timetable.ts`, `/data/tests.ts`, `/data/moduleUpdates.ts`,
+`/data/studyPlans.ts` are seeded from the real outlines in `/course-docs` (STA2005S PDF,
+CSC1016S PDF, and the MAM2013S "Course Information" HTML — note a second HTML in
+`/course-docs` is for MAM2014S/2RA Real Analysis, a different course, and was not used).
+`studyPlans.ts` is an empty typed array (no plan generated yet — step 7). No UI consumes
+`/data` yet; that starts at step 3 (timetable). Architecture stays as agreed: typed data
+in `/data` as the single source of truth, Claude Code as the ingestion engine (no runtime
+API, no database), `localStorage` only for ephemeral personal state. Next action is
+build-order step 3 (timetable weekly grid).
 
 ## Section tracker
 
 | Section | Status | Notes |
 |---|---|---|
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
-| Data layer (`/data`) | todo | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans; seed 3 courses, flag date inconsistencies with `confirm:true` |
+| Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
 | Timetable | todo | Step 3. Colour-coded weekly grid, `tbc` slots, clash detection, now/next, mobile agenda |
 | Dashboard home | todo | Step 4. Magic Bento — next class, next test + countdown, active plan, this week, urgent flags |
 | Modules | todo | Step 5. `/modules` Tilted Cards + `/modules/[code]` detail + update feed |
@@ -38,17 +37,16 @@ Status meanings: **todo** = not started · **in progress** · **done** = built +
 
 ## Quality gates (latest run)
 
-`npm run build` and `npm run lint` both pass clean on all 5 routes. Compiled CSS verified
-to contain correct token values (e.g. `--color-base: #0b0e14`, `#4c9aff` for the STA
-accent) and both font-family declarations. `prefers-reduced-motion` handled globally.
-No Playwright/Lighthouse run yet — no browser automation tool was available this session
-(claude-in-chrome not connected); visual QA was done via build output + rendered HTML/CSS
-inspection only, not a real browser. Full Lighthouse + screenshot QA should run once a
-browser tool is available, and again once step 4 (dashboard) adds real content.
+`npm run build` and `npm run lint` both pass clean (TypeScript strict mode included — all
+5 `/data` modules type-check with no `any`). Step 2 adds no UI, so there is nothing new to
+screenshot/Lighthouse this block; the step 1 caveat stands — no Playwright/Lighthouse run
+yet (no browser automation tool connected this session). Full Lighthouse + screenshot QA
+should run once a browser tool is available and once step 3 (timetable) adds rendered
+content that consumes `/data`.
 
 ## In progress
 
-Nothing in progress. Step 1 complete; awaiting review before step 2 (data layer).
+Nothing in progress. Step 2 complete; awaiting review before step 3 (timetable).
 
 ## Decisions log
 
@@ -74,29 +72,51 @@ Tailwind v4 uses a CSS-first `@theme` block in `globals.css` instead of `tailwin
 for token definitions — functionally equivalent, no config file needed.
 (2026-07-26) — GitHub repo created and pushed: https://github.com/bbwebdes/semester
 (public, per owner choice).
+(2026-07-26) — `Assessment.date` made optional and an `Assessment.tbc?: boolean` flag added
+(CLAUDE.md's schema listed `date` as required). Several real assessments have no date at
+all yet (STA practical test, STA Assignment 1, CSC practical tests pinned only to a
+week-range) — mirrors the `tbc` pattern already used on `Session`, so `/tests` can render
+"date TBC" instead of a fabricated countdown.
+(2026-07-26) — Cross-checked the STA2005S outline's conflicting Test 1/2 dates against the
+2026 calendar: neither the prose date nor the grid date matches its own claimed weekday
+for either test. Per CLAUDE.md's explicit instruction ("seed the prose dates, mark
+confirm: true"), did not attempt to resolve the discrepancy — seeded 2 Sep / 13 Oct
+verbatim with `confirm: true` and logged both as `moduleUpdates` reminders.
+(2026-07-26) — `course-docs/Course Information.html` (no suffix) is the MAM2014S ("2RA",
+Real Analysis) outline, not MAM2013S (2IA) — a different course, not part of this
+dashboard's three tracked modules. Transcribed MAM2013S from `Course Information.html (1)`
+instead. The 2RA file was left in place, untouched, in case the owner wants it later.
 
 ## Blockers / needs owner input
 
-**Open owner questions (confirm before or during step 2):**
+**Open owner questions:**
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.
-  Default assumption: Sonnet 4.6 for ~everything, Opus 4.8 only for step 2 schema + hard
-  debugging. On Pro this is comfortably within limits for this scope.
+  Default assumption: Sonnet 4.6 for ~everything, Opus 4.8 only for hard schema/debugging
+  work. On Pro this is comfortably within limits for this scope.
 - **STA2005S test dates** — outline prose ("Tue 2 Sep", "Mon 13 Oct") disagrees with its
-  schedule grid ("1 Sep", "12 Oct") and the weekday names don't match the 2026 calendar.
-  Seeded as 2 Sep / 13 Oct with `confirm:true`; confirm exact dates/times on Amathuba.
+  schedule grid ("1 Sep", "12 Oct"), and neither date matches its own claimed weekday in
+  the 2026 calendar (1 Sep is a Tuesday, 2 Sep a Wednesday; 12 Oct a Monday, 13 Oct a
+  Tuesday). Seeded the prose dates (2 Sep / 13 Oct) with `confirm:true` per CLAUDE.md;
+  confirm the real dates/times on Amathuba — this also determines whether the flagged
+  2 Sep STA/MAM clash is real.
 - **Chosen tut/prac slots** — STA tutorial + R prac, CSC practical, MAM tutorial (Thu vs
   Fri 14:00–16:00), and CSC lecture slot (which of Mon–Wed, Period 4 or 5). All seeded
   `tbc:true` until provided.
+- **STA2005S Practical Test date, Assignment 1 date** — not yet announced anywhere in the
+  outline (not even a provisional week); seeded with `tbc:true` and no `date`.
 - **App name** — "Semester" is a placeholder.
 
 **Confirmed / assumed (v1 defaults):**
 - Architecture: typed `/data` + Claude Code ingestion, no API/DB (owner-recommended, taken
   as default unless changed).
 - Dark-first theme.
+- `Assessment.date` is optional (with a `tbc` flag) rather than the required field CLAUDE.md's
+  data-model section describes, so wholly-unscheduled real assessments can still be seeded
+  now rather than invented or omitted — see decisions log.
 
 ## Next up
 
-**Step 2** — data layer: `/data/types.ts` + typed `courses`, `timetable`, `tests`,
-`moduleUpdates`, `studyPlans`; seed from the three real courses in `/course-docs` (flag
-inconsistencies with `confirm: true`, per the open owner questions above). Awaiting
-review of step 1 before starting.
+**Step 3** — timetable: colour-coded weekly grid (Mon–Fri) reading from `/data/timetable.ts`,
+`tbc` placeholders, overlapping-session clash detection, now/next highlighting from the live
+clock, responsive down to a mobile single-day agenda. Awaiting review of step 2 before
+starting.
