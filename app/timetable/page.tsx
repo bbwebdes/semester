@@ -1,10 +1,7 @@
-import { PagePlaceholder } from "../components/page-placeholder";
+import { courses } from "@/data/courses";
+import { timetable } from "@/data/timetable";
+import { TimetableView } from "./timetable-view";
 
 export default function TimetablePage() {
-  return (
-    <PagePlaceholder
-      title="Timetable"
-      step="Colour-coded weekly grid lands in build-order step 3."
-    />
-  );
+  return <TimetableView sessions={timetable} courses={courses} />;
 }

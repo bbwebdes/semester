@@ -45,22 +45,18 @@ export const timetable: Session[] = [
   {
     courseCode: "STA2005S",
     kind: "tutorial",
-    day: "Mon",
-    start: "09:00",
-    end: "10:00",
-    venue: "TBC",
-    tbc: true,
-    note: "One 1-hour tutorial per week — slot chosen on Amathuba in week 1.",
+    day: "Wed",
+    start: "14:00",
+    end: "15:00",
+    venue: "LS2B",
   },
   {
     courseCode: "STA2005S",
     kind: "prac",
-    day: "Mon",
-    start: "10:00",
-    end: "11:00",
-    venue: "TBC",
-    tbc: true,
-    note: "One 1-hour R computer prac per week — slot chosen on Amathuba in week 1.",
+    day: "Tue",
+    start: "14:00",
+    end: "15:00",
+    venue: "Scilab D",
   },
 
   // CSC1016S — Computer Science
@@ -71,8 +67,6 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "JD LT2",
-    tbc: true,
-    note: "One face-to-face lecture per week — pick Mon, Tue or Wed, Period 4 (11:00) or Period 5 (12:00), on Amathuba.",
   },
   {
     courseCode: "CSC1016S",
@@ -101,8 +95,7 @@ export const timetable: Session[] = [
     start: "12:00",
     end: "13:00",
     venue: "M320",
-    tbc: true,
-    note: "Only some Wednesdays — specific dates announced on Amathuba, not a fixed weekly slot.",
+    note: "Not every week — which Wednesdays are announced on Amathuba.",
   },
   {
     courseCode: "MAM2013S",
@@ -119,7 +112,6 @@ export const timetable: Session[] = [
     start: "14:00",
     end: "16:00",
     venue: "TBC",
-    tbc: true,
-    note: "Compulsory — sign up for Thu 14:00–16:00 or Fri 14:00–16:00 on Amathuba; slot not yet chosen. None in week 1.",
+    note: "Compulsory workshop, 41/60 in this group. Venue not yet shown on Amathuba.",
   },
 ];
