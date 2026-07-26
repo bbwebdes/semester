@@ -1,11 +1,11 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — MAM2014S added as a 4th tracked course (post-step-7)
+> Last updated: 2026-07-26 — step 8 complete except deploy (needs owner's Vercel auth)
 
 ## Current state (one paragraph)
 
-Steps 1–7 are built. Owner authorized batching steps 4+ back-to-back this session without
+Steps 1–8 are built (deploy excepted). Owner authorized batching steps 4+ back-to-back without
 stopping for review each time (see memory); still committing/pushing and updating this file
 after every step per CLAUDE.md's git discipline, just not pausing. Steps 1–2: Next.js 16 +
 Tailwind v4 scaffold with tokens/fonts/nav, and the typed `/data` layer seeded from
@@ -36,8 +36,19 @@ MAM2014S entries, and CLAUDE.md's course-data section now documents it alongside
 original three. Two real bugs surfaced and were fixed while doing this (see decisions log):
 a 4-card `/modules` grid overflow, and a false clash flag on the dashboard caused by a
 lingering pre-step-6 bug (a raw, unfiltered `findDateClashes(tests)` call that step 6 had
-already fixed on the Tests page but never got backported to the Dashboard). Next action is
-build-order step 8 (polish/a11y/perf/deploy).
+already fixed on the Tests page but never got backported to the Dashboard).
+
+**Step 8 (polish):** Lighthouse run for real against a production build (`next build` +
+`next start`, not the dev server) across all 8 routes — every route scores 100/100/100/100
+(Performance/Accessibility/Best Practices/SEO) except the dashboard's initial Performance,
+which was 96 due to a real layout shift (fixed, now also 100 — see decisions log). Star
+Border was already in place from step 4 and re-verified correct with the new course data.
+Specular Button and Gradual Blur were deliberately left unimplemented — reasoned through
+in the decisions log, not silently skipped. Full responsiveness (360/768/1440), keyboard
+focus, and `prefers-reduced-motion` re-verified across all pages including the two newer
+react.bits-inspired components (Tilted Card's tilt, Scroll Stack's sticky stack). The one
+remaining build-order item, first deploy to Vercel, needs the owner's own account
+authorization in a browser and cannot be done unilaterally — flagged below, not attempted.
 
 ## Section tracker
 
@@ -50,8 +61,8 @@ build-order step 8 (polish/a11y/perf/deploy).
 | Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
 | Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
 | Study planner | done | Step 7. `/planner` + `/planner/[testId]` Scroll Stack timeline, `localStorage` check-offs (verified across reload). One real plan generated (CSC1016S Theory Test 1). Build/lint clean; screenshotted 360/768/1440 + live scroll-stack + checkbox persistence. |
-| Polish / a11y / perf | todo | Step 8. Specular Button, Star Border, Gradual Blur; responsive 360; Lighthouse ≥90; deploy |
 | MAM2014S ingestion | done | Post-step-7. 4th course added end to end (types, tokens, all 4 data files, CLAUDE.md). Build/lint clean; screenshotted all 5 routes at 360/1440; fixed a card-overflow bug and a false-clash dashboard bug (see decisions). |
+| Polish / a11y / perf | done | Step 8. Lighthouse 100/100/100/100 on all 8 routes (production build), fixed a real CLS regression on the dashboard. Star Border in place; Specular Button/Gradual Blur deliberately deferred (see decisions). Responsive/focus/reduced-motion re-verified everywhere. **Deploy not done** — needs owner's Vercel auth. |
 
 Status meanings: **todo** = not started · **in progress** · **done** = built + self-QA passed
 · **reviewed** = owner approved at checkpoint.
@@ -149,8 +160,8 @@ caught and fixed before calling it done:
 
 ## In progress
 
-Nothing in progress. Continuing to step 8 per the owner's "continue until completion"
-instruction for this course-data adjustment — see memory.
+Nothing in progress. Step 8 complete except deploy (blocked on owner's Vercel auth, see
+below) — the full build order is otherwise done.
 
 ## Decisions log
 
@@ -300,8 +311,39 @@ genuinely a Tuesday, matching the source's own weekday claims) — found no inco
 `confirm: true` was deliberately *not* set on these two, unlike MAM2013S's and STA2005S's
 test dates. Confirm markers should reflect actual evidence of a problem, not be applied
 uniformly "to be safe."
+(2026-07-26) — First real Lighthouse run this project (`next build` + `next start`, all
+8 routes): everything scored 100 except the dashboard's Performance (96), caused by a
+genuine Cumulative Layout Shift of ~0.12 — the five Bento tiles render a terse "Loading…"
+line before `now` populates client-side, then swap to taller real content once it does,
+reflowing the whole card grid beneath. Fixed by wrapping each tile's conditional content in
+a container with a `min-h-[…]` sized to the loaded state, so the loading and loaded states
+occupy the same space and nothing reflows. Re-run confirms CLS 0.004 and Performance 100.
+This is exactly the "no layout shift, always set dimensions" rule CLAUDE.md's quality floor
+already states for react.bits effects — turns out it applies just as much to plain
+client-hydration content swaps.
+(2026-07-26) — Specular Button and Gradual Blur (step 8's remaining react.bits accents)
+deliberately left unimplemented rather than forced in:
+  - Specular Button is scoped to "primary actions (the amber CTA)". There is no in-app
+    primary action anywhere in this build — study plans are generated by an external Claude
+    Code command, not a button, specifically so there's no fake "Generate" affordance (see
+    the step-7 decision on the Active Plan tile's empty state). Nothing currently qualifies.
+  - Gradual Blur is scoped to "any overflow-scroll list (a long timetable column, the module
+    update feed)". Neither exists as an actual overflow-scroll container in this build: the
+    timetable grid is a fixed 08:00–18:00 window rendered inline in the page (not an
+    internally-scrolling box), and every `moduleUpdates` feed is currently 1–2 items.
+  Both are explicitly allowed to stay "held in reserve... only if a clear need appears" per
+  CLAUDE.md's own component-system section — deferring is the documented default, not a
+  gap. Revisit if either a longer update feed or a genuinely tall/scrollable list shows up.
 
 ## Blockers / needs owner input
+
+**The one thing left to reach full build-order completion:**
+- **Deploy to Vercel** — every other part of step 8 (and steps 1–7) is done. This is the
+  only remaining item, and it genuinely can't be done without you: connecting the GitHub
+  repo to Vercel requires your own account authorization in a browser. Everything is
+  committed and pushed to `main` (`bbwebdes/semester`) and ready to import as-is the moment
+  you're ready — just say so, or do it yourself via vercel.com → New Project → import the
+  repo (no config needed, it's a standard Next.js app).
 
 **Open owner questions:**
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.
@@ -331,11 +373,6 @@ uniformly "to be safe."
 - **MAM2014S test venues** — both Test 1 (24 Aug) and Test 2 (6 Oct) have confirmed
   date/time but "venues... will be announced closer to the time" per the source; seeded
   `venue: "TBC"`.
-- **Deploy target** — no Vercel project connected yet (confirmed with the owner in an
-  earlier turn: they chose to run locally for now rather than set up Vercel). Step 8
-  includes "first deploy" on the build order; that step needs the owner's own browser
-  authorization and can't be done unilaterally — will flag it distinctly when reached
-  rather than attempting it.
 
 **Confirmed / assumed (v1 defaults):**
 - Architecture: typed `/data` + Claude Code ingestion, no API/DB (owner-recommended, taken
@@ -352,10 +389,8 @@ uniformly "to be safe."
 
 ## Next up
 
-**Step 8** — polish: remaining react.bits accents (Specular Button for primary CTAs — none
-exist yet since there's no in-app generation flow; may end up not applicable), responsive
-audit down to 360px across all pages (now 4 courses, not 3 — re-check anywhere card/grid
-layouts assumed 3), full a11y pass, Lighthouse ≥90 on every changed page, and first deploy.
-Owner has instructed to continue through completion without stopping — proceeding directly
-into step 8 now. The deploy sub-step needs the owner's own Vercel authorization and will be
-called out distinctly rather than attempted unilaterally.
+Every build-order step (1–8) is complete except deploying to Vercel, which needs the
+owner's own account authorization — see "Blockers" above. Nothing else is planned; this is
+the natural end of the CLAUDE.md build order. Any further work from here is either (a)
+resolving one of the open owner questions above, (b) the owner deploying (or asking for
+help walking through it), or (c) new scope the owner asks for.

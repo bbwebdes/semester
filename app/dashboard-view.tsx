@@ -41,10 +41,10 @@ function NextClassTile({
   return (
     <BentoTile glow={course?.accent ?? "neutral"} className="md:col-span-2">
       <h2 className="text-sm font-medium text-muted">Next class</h2>
-      {!now || !next ? (
-        <p className="mt-2 text-base text-muted">Loading…</p>
-      ) : (
-        <div className="mt-2 flex flex-1 flex-col justify-between gap-4">
+      <div className="mt-2 min-h-[92px]">
+        {!now || !next ? (
+          <p className="text-base text-muted">Loading…</p>
+        ) : (
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <span className={`font-display text-2xl ${accent.text}`}>
@@ -62,8 +62,8 @@ function NextClassTile({
             </p>
             <p className="text-sm text-muted">{next.venue}</p>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </BentoTile>
   );
 }
@@ -93,42 +93,44 @@ function NextTestTile({
       className="md:col-span-2"
     >
       <h2 className="text-sm font-medium text-muted">Next test</h2>
-      {!now ? (
-        <p className="mt-2 text-base text-muted">Loading…</p>
-      ) : !next ? (
-        <p className="mt-2 text-base text-muted">
-          No upcoming tests with a confirmed date.
-        </p>
-      ) : (
-        <div className="mt-2 flex flex-1 items-end justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <span className={`font-display text-2xl ${accent.text}`}>
-              {next.courseCode}
+      <div className="mt-2 flex min-h-[130px] items-end">
+        {!now ? (
+          <p className="text-base text-muted">Loading…</p>
+        ) : !next ? (
+          <p className="text-base text-muted">
+            No upcoming tests with a confirmed date.
+          </p>
+        ) : (
+          <div className="flex w-full items-end justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <span className={`font-display text-2xl ${accent.text}`}>
+                {next.courseCode}
+              </span>
+              <p className="text-base text-text">{next.title}</p>
+              <p className="text-sm text-muted">
+                {format(parseISO(next.date), "EEE d MMM")}
+                {next.start ? ` · ${next.start}` : ""} · {next.venue ?? "TBC"}
+              </p>
+              {next.confirm && (
+                <span className="mt-1 w-fit rounded-full border border-danger/70 bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger">
+                  Verify on Amathuba
+                </span>
+              )}
+              {clashes && clashes.length > 1 && (
+                <span className="mt-1 w-fit rounded-full border border-danger/70 bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger">
+                  Clash: {clashes.length} assessments same day
+                </span>
+              )}
+            </div>
+            <span className="font-display text-3xl leading-none text-text">
+              {daysUntil(next.date, now)}
+              <span className="ml-1 text-sm font-sans font-normal text-muted">
+                {daysUntil(next.date, now) === 1 ? "day" : "days"}
+              </span>
             </span>
-            <p className="text-base text-text">{next.title}</p>
-            <p className="text-sm text-muted">
-              {format(parseISO(next.date), "EEE d MMM")}
-              {next.start ? ` · ${next.start}` : ""} · {next.venue ?? "TBC"}
-            </p>
-            {next.confirm && (
-              <span className="mt-1 w-fit rounded-full border border-danger/70 bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger">
-                Verify on Amathuba
-              </span>
-            )}
-            {clashes && clashes.length > 1 && (
-              <span className="mt-1 w-fit rounded-full border border-danger/70 bg-danger/10 px-2 py-0.5 text-xs font-medium text-danger">
-                Clash: {clashes.length} assessments same day
-              </span>
-            )}
           </div>
-          <span className="font-display text-3xl leading-none text-text">
-            {daysUntil(next.date, now)}
-            <span className="ml-1 text-sm font-sans font-normal text-muted">
-              {daysUntil(next.date, now) === 1 ? "day" : "days"}
-            </span>
-          </span>
-        </div>
-      )}
+        )}
+      </div>
     </BentoTile>
   );
 }
@@ -147,27 +149,29 @@ function ThisWeekTile({
   return (
     <BentoTile className="md:col-span-1">
       <h2 className="text-sm font-medium text-muted">This week</h2>
-      {!now ? (
-        <p className="mt-2 text-base text-muted">Loading…</p>
-      ) : (
-        <ul className="mt-2 flex flex-1 flex-col gap-2">
-          {upcoming.map((session, i) => {
-            const course = courseFor(courses, session.courseCode);
-            const accent = accentClasses[course?.accent ?? "sta"];
-            return (
-              <li key={i} className="flex items-center gap-2 text-sm">
-                <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${accent.bg} ring-1 ${accent.ring}`} />
-                <span className={`font-medium ${accent.text}`}>
-                  {session.courseCode}
-                </span>
-                <span className="truncate text-muted">
-                  {session.day} {session.start}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <div className="mt-2 min-h-[100px]">
+        {!now ? (
+          <p className="text-base text-muted">Loading…</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {upcoming.map((session, i) => {
+              const course = courseFor(courses, session.courseCode);
+              const accent = accentClasses[course?.accent ?? "sta"];
+              return (
+                <li key={i} className="flex items-center gap-2 text-sm">
+                  <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${accent.bg} ring-1 ${accent.ring}`} />
+                  <span className={`font-medium ${accent.text}`}>
+                    {session.courseCode}
+                  </span>
+                  <span className="truncate text-muted">
+                    {session.day} {session.start}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </BentoTile>
   );
 }
@@ -209,30 +213,32 @@ function UrgentFlagsTile({
   return (
     <BentoTile className="md:col-span-1">
       <h2 className="text-sm font-medium text-muted">Urgent flags</h2>
-      {!now ? (
-        <p className="mt-2 text-base text-muted">Loading…</p>
-      ) : flags.length === 0 ? (
-        <p className="mt-2 text-base text-muted">Nothing needs attention.</p>
-      ) : (
-        <ul className="mt-2 flex flex-1 flex-col gap-2">
-          {flags.map((flag, i) => (
-            <li key={i}>
-              {flag.href ? (
-                <Link
-                  href={flag.href}
-                  className="block rounded-lg border border-danger/70 bg-danger/10 px-3 py-2 text-sm text-danger transition-colors duration-200 ease-out hover:bg-danger/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                >
-                  {flag.text}
-                </Link>
-              ) : (
-                <p className="rounded-lg border border-danger/70 bg-danger/10 px-3 py-2 text-sm text-danger">
-                  {flag.text}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      <div className="mt-2 min-h-[140px]">
+        {!now ? (
+          <p className="text-base text-muted">Loading…</p>
+        ) : flags.length === 0 ? (
+          <p className="text-base text-muted">Nothing needs attention.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {flags.map((flag, i) => (
+              <li key={i}>
+                {flag.href ? (
+                  <Link
+                    href={flag.href}
+                    className="block rounded-lg border border-danger/70 bg-danger/10 px-3 py-2 text-sm text-danger transition-colors duration-200 ease-out hover:bg-danger/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    {flag.text}
+                  </Link>
+                ) : (
+                  <p className="rounded-lg border border-danger/70 bg-danger/10 px-3 py-2 text-sm text-danger">
+                    {flag.text}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       {todayLabel === null && (
         <p className="mt-2 text-xs text-muted">
           No classes today — it&apos;s the weekend.
@@ -269,43 +275,47 @@ function ActivePlanTile({
       className="md:col-span-2"
     >
       <h2 className="text-sm font-medium text-muted">Active study plan</h2>
-      {!plan ? (
-        <p className="mt-2 text-base text-muted">
-          No active study plan yet. Plans are generated per test as one
-          approaches —{" "}
-          <Link
-            href="/planner"
-            className="text-text underline underline-offset-2 hover:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            view the planner
-          </Link>
-          .
-        </p>
-      ) : (
-        <div className="mt-2 flex items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <span className={`font-display text-xl ${accent.text}`}>
-              {plan.courseCode}
-            </span>
-            <p className="text-base text-text">{test?.title ?? plan.testId}</p>
+      <div className="mt-2 flex min-h-[70px] items-center">
+        {!plan ? (
+          <p className="text-base text-muted">
+            No active study plan yet. Plans are generated per test as one
+            approaches —{" "}
             <Link
-              href={`/planner/${plan.testId}`}
-              className="w-fit text-sm text-muted underline underline-offset-2 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              href="/planner"
+              className="text-text underline underline-offset-2 hover:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
-              View timeline
+              view the planner
             </Link>
+            .
+          </p>
+        ) : (
+          <div className="flex w-full items-center justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <span className={`font-display text-xl ${accent.text}`}>
+                {plan.courseCode}
+              </span>
+              <p className="text-base text-text">
+                {test?.title ?? plan.testId}
+              </p>
+              <Link
+                href={`/planner/${plan.testId}`}
+                className="w-fit text-sm text-muted underline underline-offset-2 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              >
+                View timeline
+              </Link>
+            </div>
+            {startsIn !== null && (
+              <span className="shrink-0 text-sm font-medium text-text">
+                {startsIn > 0
+                  ? `Starts in ${startsIn} day${startsIn === 1 ? "" : "s"}`
+                  : startsIn === 0
+                    ? "Start today"
+                    : "In progress"}
+              </span>
+            )}
           </div>
-          {startsIn !== null && (
-            <span className="shrink-0 text-sm font-medium text-text">
-              {startsIn > 0
-                ? `Starts in ${startsIn} day${startsIn === 1 ? "" : "s"}`
-                : startsIn === 0
-                  ? "Start today"
-                  : "In progress"}
-            </span>
-          )}
-        </div>
-      )}
+        )}
+      </div>
     </BentoTile>
   );
 }
