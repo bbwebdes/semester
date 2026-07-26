@@ -6,6 +6,7 @@ import { format, parseISO } from "date-fns";
 import type { Assessment, Course, Session, StudyPlan } from "@/data/types";
 import { accentClasses } from "@/lib/accent";
 import {
+  findClashes,
   formatTimeRange,
   getTodayLabel,
   getUpcomingSessions,
@@ -190,7 +191,22 @@ function UrgentFlagsTile({
   const unsetSlots = sessions.filter((s) => s.tbc);
   const todayLabel = now ? getTodayLabel(now) : null;
 
+  const sessionClashIndices = findClashes(sessions);
+  const clashingByDay = new Map<string, Set<string>>();
+  sessions.forEach((session, i) => {
+    if (!sessionClashIndices.has(i)) return;
+    const courses = clashingByDay.get(session.day) ?? new Set<string>();
+    courses.add(session.courseCode);
+    clashingByDay.set(session.day, courses);
+  });
+
   const flags: { text: string; href?: string }[] = [];
+  for (const [day, courses] of clashingByDay) {
+    flags.push({
+      text: `${[...courses].join(" & ")} clash every ${day}`,
+      href: "/timetable",
+    });
+  }
   for (const [date, clashing] of dateClashes) {
     flags.push({
       text: `${clashing.map((a) => a.courseCode).join(" & ")} clash on ${format(parseISO(date), "d MMM")}`,
@@ -213,7 +229,7 @@ function UrgentFlagsTile({
   return (
     <BentoTile className="md:col-span-1">
       <h2 className="text-sm font-medium text-muted">Urgent flags</h2>
-      <div className="mt-2 min-h-[140px]">
+      <div className="mt-2 min-h-[176px]">
         {!now ? (
           <p className="text-base text-muted">Loading…</p>
         ) : flags.length === 0 ? (

@@ -1,7 +1,7 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 8 complete except deploy (needs owner's Vercel auth)
+> Last updated: 2026-07-26 — final QA pass complete; real timetable clash found (see Blockers)
 
 ## Current state (one paragraph)
 
@@ -158,10 +158,21 @@ caught and fixed before calling it done:
   combinations exposing old latent bugs is exactly why this dashboard re-screenshots real
   data after every change rather than trusting that "it worked before."
 
+Final scheduled QA pass (post-step-8, usage-limit resume): build/lint clean; Playwright
+sweep of all 10 routes (`/`, `/timetable`, `/modules` ×5, `/tests`, `/planner` ×2) with zero
+console/page errors; Lighthouse re-run on the two changed pages (home, timetable) both still
+100/100/100/100, CLS 0.004–0.006. See decisions log for the MAM2014S slot update, the
+Dashboard Urgent-Flags coverage gap it exposed and fixed, and the real (non-bug) timetable
+clash it surfaced.
+
 ## In progress
 
-Nothing in progress. Step 8 complete except deploy (blocked on owner's Vercel auth, see
-below) — the full build order is otherwise done.
+Nothing in progress. Ran the scheduled final QA pass (owner asleep, usage limit had reset):
+applied the owner's MAM2014S lecture-slot choice (Period 4, 11:00, confirmed via a quick
+message before the reset), then `npm run build` + `npm run lint` + a full Playwright sweep
+of all 10 routes (zero console/page errors) + a fresh Lighthouse run on the two changed
+pages. Found and fixed one real gap; found and surfaced one real scheduling conflict that
+isn't a bug — see decisions log and Blockers. Full build order is done except deploy.
 
 ## Decisions log
 
@@ -334,8 +345,45 @@ deliberately left unimplemented rather than forced in:
   Both are explicitly allowed to stay "held in reserve... only if a clear need appears" per
   CLAUDE.md's own component-system section — deferring is the documented default, not a
   gap. Revisit if either a longer update feed or a genuinely tall/scrollable list shows up.
+(2026-07-26) — Owner confirmed MAM2014S's lecture slot: Period 4 (11:00–11:45, Assoc Prof
+Berdysheva), not Period 5. Updated `timetable.ts` (all three Mon/Thu/Wed lecture sessions
+now confirmed, `tbc` removed), `courses.ts`'s `lectureInfo` (also fixed a pre-existing typo
+there — it said the tutorial was 14:00–15:00, but the actual confirmed slot is 14:00–14:45),
+and replaced the now-resolved "pick a slot" `moduleUpdates` reminder with a factual
+`announcement` recording the choice made, rather than leaving a stale instruction to do
+something already done.
+(2026-07-26) — Confirming that slot revealed a real, unavoidable timetable clash: MAM2014S's
+Period 4 (Mon 11:00–11:45, M320) directly overlaps CSC1016S's Monday lecture (11:00–11:45,
+JD LT2). Checked whether Period 5 would have been better — it would not: Period 5
+(12:00–12:45) overlaps MAM2013S's Mon/Wed/Fri lecture (12:00–13:00) instead. This is a
+genuine three-course scheduling conflict inherent to the owner's timetable, not a data bug,
+and correctly surfaces via the timetable's existing clash detection — logged as a real
+blocker below rather than "fixed" by silently altering data to hide it.
+(2026-07-26) — While verifying the above, found that the Dashboard's "Urgent flags" tile
+only ever checked assessment-*date* clashes (`findDateClashes`) and unset timetable slots —
+it had no path to surface a timetable *session*-time clash like the one above, even though
+CLAUDE.md's own dashboard spec lists "clash" generically as an urgent-flag category and the
+timetable page has had session-clash detection (`findClashes`) since step 3. Treated as a
+genuine coverage gap in an existing feature (not new scope) and fixed: the tile now also
+groups `findClashes` results by day and surfaces them (e.g. "CSC1016S & MAM2014S clash every
+Mon", linking to `/timetable`), sized generously enough (`min-h-[176px]`) to avoid
+reintroducing the step-8 CLS issue as flag count grows.
+(2026-07-26) — Final scheduled QA pass (see quality gates): full rebuild, lint, a 10-route
+Playwright sweep (zero console errors), and a re-run Lighthouse check on the two changed
+pages (home, timetable) — both still 100/100/100/100, CLS 0.004–0.006, confirming the new
+dashboard clash flag didn't reintroduce the layout-shift bug fixed earlier in step 8.
 
 ## Blockers / needs owner input
+
+**⚠ Real timetable clash — needs a real-world decision, not a data fix:**
+- **MAM2014S (Mon 11:00, Period 4) directly clashes with CSC1016S (Mon 11:00)**, both
+  11:00–11:45. Checked Period 5 as an alternative — it clashes with MAM2013S's Mon/Wed/Fri
+  12:00 lecture instead, so there's no clash-free period choice available; this is a genuine
+  three-course conflict in your timetable, not something the dashboard can resolve for you.
+  It's now surfaced both on `/timetable` and on the Dashboard's Urgent Flags tile ("CSC1016S
+  & MAM2014S clash every Mon"). Worth raising with one of the departments (e.g. ask about
+  catching a recording, or whether the CSC lecture group has flexibility) before it becomes
+  a habit of missing one or the other.
 
 **The one thing left to reach full build-order completion:**
 - **Deploy to Vercel** — every other part of step 8 (and steps 1–7) is done. This is the
@@ -344,6 +392,12 @@ deliberately left unimplemented rather than forced in:
   committed and pushed to `main` (`bbwebdes/semester`) and ready to import as-is the moment
   you're ready — just say so, or do it yourself via vercel.com → New Project → import the
   repo (no config needed, it's a standard Next.js app).
+
+**Waiting on:**
+- **MAM2012S** — owner mentioned they're pending registration for a possible 5th course.
+  Not added anywhere yet (no info sheet, not confirmed) — will ingest the same way as
+  MAM2014S once registration is confirmed and the course info sheet is dropped in
+  `course-docs`.
 
 **Open owner questions:**
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.
@@ -367,9 +421,6 @@ deliberately left unimplemented rather than forced in:
   per-test generation command. Review its scope/phasing/lead-time and either keep it,
   edit it, or say the word and it comes out — future plans can go back to being generated
   only on request if preferred.
-- **MAM2014S lecture slot** — which of Period 4 (11:00, Berdysheva) or Period 5 (12:00,
-  Vandeyar) was actually chosen. All three lecture sessions (Mon/Thu/some-Wed) seeded
-  `tbc:true` with a placeholder Period-4 time until confirmed.
 - **MAM2014S test venues** — both Test 1 (24 Aug) and Test 2 (6 Oct) have confirmed
   date/time but "venues... will be announced closer to the time" per the source; seeded
   `venue: "TBC"`.
@@ -386,6 +437,9 @@ deliberately left unimplemented rather than forced in:
   owner-supplied Amathuba screenshots, see decisions log.
 - MAM2014S tracked as a 4th course (`ra` teal accent) — supersedes the earlier assumption
   that only three courses existed; see decisions log.
+- MAM2014S lecture slot confirmed as Period 4 (Mon/Thu/some-Wed, 11:00–11:45, M320,
+  Berdysheva) — no longer `tbc`. This is what revealed the real Mon 11:00 clash with
+  CSC1016S; see Blockers.
 
 ## Next up
 

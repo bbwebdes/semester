@@ -36,10 +36,10 @@ export const moduleUpdates: Update[] = [
   {
     courseCode: "MAM2014S",
     date: "2026-07-27",
-    kind: "reminder",
-    title: "Pick a lecture slot and stick to it",
-    body: "Two lecture slots run in parallel at slightly different paces — Period 4 (11:00, Assoc Prof Berdysheva) or Period 5 (12:00, Morgan Vandeyar), both M320. Choose whichever fits your other courses and stay with it for the semester.",
-    source: "MAM2014S Course Information (Amathuba)",
+    kind: "announcement",
+    title: "Lecture slot chosen: Period 4",
+    body: "Attending the 11:00–11:45 slot with Assoc Prof Berdysheva (rather than Period 5, 12:00 with Morgan Vandeyar). Timetable updated to match.",
+    source: "Owner confirmation",
   },
   {
     courseCode: "MAM2014S",

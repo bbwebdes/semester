@@ -123,8 +123,7 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    tbc: true,
-    note: "Pick one slot and stick to it: Period 4 (11:00, Berdysheva) or Period 5 (12:00, Vandeyar), both M320.",
+    note: "Period 4, Assoc Prof Berdysheva.",
   },
   {
     courseCode: "MAM2014S",
@@ -133,8 +132,7 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    tbc: true,
-    note: "Pick one slot and stick to it: Period 4 (11:00, Berdysheva) or Period 5 (12:00, Vandeyar), both M320.",
+    note: "Period 4, Assoc Prof Berdysheva.",
   },
   {
     courseCode: "MAM2014S",
@@ -143,8 +141,7 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    tbc: true,
-    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot. Same period choice as Mon/Thu.",
+    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot.",
   },
   {
     courseCode: "MAM2014S",

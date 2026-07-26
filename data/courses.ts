@@ -134,7 +134,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "Two lecture slots on offer — pick one and stick to it: Period 4 (11:00–11:45) or Period 5 (12:00–12:45), both M320 (tbc). Mon + Thu every week, plus some Wednesdays. Tutorial (compulsory): Fri 14:00–15:00, MCB Sem A.",
+      "Period 4, 11:00–11:45, M320, Assoc Prof Berdysheva. Mon + Thu every week, plus some Wednesdays. Tutorial (compulsory): Fri 14:00–14:45, MCB Sem A.",
     assessmentWeights: [
       { label: "Test 1 (of class record)", weight: 0.475 },
       { label: "Test 2 (of class record)", weight: 0.475 },
