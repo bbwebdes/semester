@@ -1,10 +1,10 @@
-import { PagePlaceholder } from "../components/page-placeholder";
+import { courses } from "@/data/courses";
+import { tests } from "@/data/tests";
+import { studyPlans } from "@/data/studyPlans";
+import { PlannerView } from "./planner-view";
 
 export default function PlannerPage() {
   return (
-    <PagePlaceholder
-      title="Planner"
-      step="Scroll Stack study-plan timelines land in build-order step 7."
-    />
+    <PlannerView studyPlans={studyPlans} tests={tests} courses={courses} />
   );
 }

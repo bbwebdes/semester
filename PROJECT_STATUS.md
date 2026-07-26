@@ -1,34 +1,31 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 6 complete
+> Last updated: 2026-07-26 — step 7 complete
 
 ## Current state (one paragraph)
 
-Steps 1–6 are built. Owner authorized batching steps 4+ back-to-back this session without
+Steps 1–7 are built. Owner authorized batching steps 4+ back-to-back this session without
 stopping for review each time (see memory); still committing/pushing and updating this file
 after every step per CLAUDE.md's git discipline, just not pausing. Steps 1–2: Next.js 16 +
 Tailwind v4 scaffold with tokens/fonts/nav, and the typed `/data` layer seeded from
-`/course-docs`. Step 3: `/timetable` — colour-coded `<table>` weekly grid + mobile agenda,
-clash detection, live now/next, a "Set your slot" panel for the one genuinely-unset session
-(CSC1016S practical). Step 4: `/` — a Magic-Bento-style dashboard (`BentoTile` with
-cursor-glow hover + an amber Star Border on the single most urgent tile) showing next
-class, next test + live countdown, this week, urgent flags, and an honest empty-state
-active-plan tile (no plans until step 7). Step 5: `/modules` — a Tilted Card grid (subtle
-pointer-tilt, `prefers-reduced-motion` disables it) linking to `/modules/[code]`, which
-shows convenor/contacts, a real per-course schedule (pulled from `/data/timetable.ts`, not
-hardcoded), assessment weights + final-mark formula, DP rules, and a soonest-first
-`moduleUpdates` feed with past items visually de-emphasised. `lib/tests.ts` and
-`lib/accent.ts` hold shared countdown/clash and module-accent helpers respectively, reused
-across dashboard/modules/tests. Step 6: `/tests` lists every assessment soonest-first with
-a live countdown, weight, venue, `confirm` markers, and a study-plan link (none exist yet);
-the flagged 2 Sep STA/MAM clash surfaces as both a page-top banner and per-row badges; a
-separate "Date tentative / TBC" section holds anything with `tbc: true` — including the two
-CSC practical tests, which carry a placeholder week-start `date` but aren't real confirmed
-dates (a real bug caught during QA — see decisions log). Architecture stays as agreed:
-typed data in `/data` as the single source of truth, Claude Code as the ingestion engine
-(no runtime API, no database), `localStorage` only for ephemeral personal state. Next
-action is build-order step 7 (study planner).
+`/course-docs`. Step 3: `/timetable` — weekly grid + mobile agenda, clash detection,
+live now/next. Step 4: `/` — a Magic-Bento-style dashboard (next class, next test +
+countdown, this week, urgent flags, active plan). Step 5: `/modules` — Tilted Card grid +
+per-course detail pages (schedule, weights, DP rules, updates feed). Step 6: `/tests` —
+every assessment soonest-first with countdowns, clash banner, `confirm` markers, and a
+tentative/TBC section. `lib/tests.ts` and `lib/accent.ts` hold shared countdown/clash and
+module-accent helpers reused across dashboard/modules/tests/planner. Step 7: `/planner` +
+`/planner/[testId]` — a Scroll Stack timeline (CSS `position: sticky` cards, phases
+genuinely stack as you scroll) with `localStorage`-persisted task check-offs (verified:
+check a task, reload, still checked). Rather than ship only empty states, generated one
+real study plan for the nearest actual test (CSC1016S Theory Test 1, 26 Aug) from the
+transcribed syllabus, so the timeline/check-off feature has real content proving it works
+end to end — the dashboard's Active study plan tile and the Star Border urgency priority
+between "next test" and "active plan starting today" were updated to use it. Architecture
+stays as agreed: typed data in `/data` as the single source of truth, Claude Code as the
+ingestion engine (no runtime API, no database), `localStorage` only for ephemeral personal
+state. Next action is build-order step 8 (polish/a11y/perf/deploy).
 
 ## Section tracker
 
@@ -40,7 +37,7 @@ action is build-order step 7 (study planner).
 | Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
 | Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
 | Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
-| Study planner | todo | Step 7. `/planner` + Scroll Stack timeline; generation command; localStorage check-offs |
+| Study planner | done | Step 7. `/planner` + `/planner/[testId]` Scroll Stack timeline, `localStorage` check-offs (verified across reload). One real plan generated (CSC1016S Theory Test 1). Build/lint clean; screenshotted 360/768/1440 + live scroll-stack + checkbox persistence. |
 | Polish / a11y / perf | todo | Step 8. Specular Button, Star Border, Gradual Blur; responsive 360; Lighthouse ≥90; deploy |
 
 Status meanings: **todo** = not started · **in progress** · **done** = built + self-QA passed
@@ -111,9 +108,18 @@ anything with `tbc: true` (whether or not it has a placeholder date) goes in a m
 "Date tentative / TBC" section that shows "Approx. week of ⟨date⟩" when a placeholder date
 exists and "No date announced yet" when it doesn't.
 
+Step 7 (`/planner`, `/planner/[testId]`): build/lint clean; `csc-theory-test-1` confirmed
+statically generated. Playwright screenshots at 360/768/1440. Specifically verified the two
+riskiest pieces live, not just visually: (1) scrolled the detail page programmatically and
+screenshotted mid-scroll — confirmed phase cards genuinely overlap/stack via CSS
+`position: sticky` as intended, not just a flat list; (2) checked a task checkbox, read
+`localStorage` directly to confirm the key was written, then reloaded the page and
+confirmed the checkbox was still checked and the task text still struck through.
+
 ## In progress
 
-Nothing in progress. Step 6 complete; continuing straight to step 7 (batched, see memory).
+Nothing in progress. Step 7 complete. Pausing the batch here (4 steps this block: 4–7) to
+report back per the owner's "2–4 steps" instruction — see memory for the batching context.
 
 ## Decisions log
 
@@ -218,6 +224,27 @@ up on the matching module page too.
 in `/tests`'s own page-level bucketing duplicating that logic slightly wrong. Established
 as a standing rule: any new code that buckets assessments by confidence should call the
 `lib/tests.ts` helpers rather than re-deriving the check inline.
+(2026-07-26) — Generated a real study plan for CSC1016S Theory Test 1 (step 7) instead of
+leaving `studyPlans.ts` empty and shipping only empty states. Reasoning: the Scroll Stack
+timeline and the `localStorage` check-off mechanism are the two riskiest, most novel pieces
+of this step, and neither can be meaningfully proven correct against zero data — an empty
+state proves nothing about whether stacking or persistence actually work. The test is 31
+days out (reasonably "approaching" per the generation command's own trigger condition), and
+the scope/schedule was derived from the already-transcribed CSC1016S syllabus + the
+Week 1–5 schedule grid (not invented) — 4 topics covered before the test date, a 12-day
+lead time split into 5 phases. If the owner would rather plans only ever appear via an
+explicit "generate a plan for X" request, this one can be deleted from `studyPlans.ts`;
+flagging as a blocker below.
+(2026-07-26) — Scroll Stack implemented as plain CSS `position: sticky` cards with
+per-index incrementing `top` offsets — no scroll-linked JS/Framer Motion transforms needed
+for the core stacking mechanic, which is layout behaviour rather than animation, so it's
+unaffected by (and doesn't need to be gated behind) `prefers-reduced-motion`. Verified with
+a programmatic-scroll screenshot, not just a static full-page capture, since the effect
+only shows while actually scrolling.
+(2026-07-26) — Star Border "most urgent tile" priority on the dashboard now has an explicit
+order: an active study plan whose `startDate` has arrived beats the next-test countdown
+(both can't be starred at once, per CLAUDE.md's "single most-urgent card"). Currently moot
+(the one real plan starts in 19 days) but wired correctly for when it isn't.
 
 ## Blockers / needs owner input
 
@@ -238,6 +265,11 @@ as a standing rule: any new code that buckets assessments by confidence should c
 - **MAM2013S tutorial venue** — day/time confirmed (Thu 14:00–16:00 via Amathuba group
   signup) but the venue isn't shown in that group listing; seeded `venue: "TBC"`.
 - **App name** — "Semester" is a placeholder.
+- **Auto-generated CSC1016S study plan** — built proactively during step 7 to prove the
+  Scroll Stack/check-off feature works (see decisions log), not requested via the explicit
+  per-test generation command. Review its scope/phasing/lead-time and either keep it,
+  edit it, or say the word and it comes out — future plans can go back to being generated
+  only on request if preferred.
 
 **Confirmed / assumed (v1 defaults):**
 - Architecture: typed `/data` + Claude Code ingestion, no API/DB (owner-recommended, taken
@@ -252,9 +284,9 @@ as a standing rule: any new code that buckets assessments by confidence should c
 
 ## Next up
 
-**Step 7** — study planner: `/planner` list + `/planner/[testId]` Scroll Stack timeline;
-wire the generation command described in CLAUDE.md; `localStorage` task check-offs. No
-study plan has been generated yet (that's a separate, scope-aware command run per test as
-one approaches), so this step is mostly building the *infrastructure* — the list/detail
-pages, the timeline component, and the check-off persistence — against `studyPlans.ts`
-while it's still an empty array. Continuing immediately (batched — see memory).
+**Step 8** — polish: remaining react.bits accents (Specular Button for primary CTAs — none
+exist yet since there's no in-app generation flow; may end up not applicable), responsive
+audit down to 360px across all pages, full a11y pass, Lighthouse ≥90 on every changed page
+(no run yet all session — needs a built/served app, not just dev-server screenshots), and
+first deploy. This is the natural point to pause the batch and report back per the owner's
+"2–4 steps" instruction (steps 4–7 landed this block) — see memory.

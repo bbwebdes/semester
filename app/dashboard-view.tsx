@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import type { Assessment, Course, Session } from "@/data/types";
+import type { Assessment, Course, Session, StudyPlan } from "@/data/types";
 import { accentClasses } from "@/lib/accent";
 import {
   formatTimeRange,
@@ -67,21 +67,22 @@ function NextTestTile({
   tests,
   courses,
   now,
+  urgent,
 }: {
   tests: Assessment[];
   courses: Course[];
   now: Date | null;
+  urgent: boolean;
 }) {
   const next = now ? getNextConfirmed(tests, now) : undefined;
   const course = next ? courseFor(courses, next.courseCode) : undefined;
   const accent = accentClasses[course?.accent ?? "sta"];
   const clashes = next ? findDateClashes(tests).get(next.date) : undefined;
-  const isUrgent = !!next;
 
   return (
     <BentoTile
       glow={course?.accent ?? "neutral"}
-      urgent={isUrgent}
+      urgent={urgent && !!next}
       className="md:col-span-2"
     >
       <h2 className="text-sm font-medium text-muted">Next test</h2>
@@ -234,21 +235,70 @@ function UrgentFlagsTile({
   );
 }
 
-function ActivePlanTile() {
+function ActivePlanTile({
+  studyPlans,
+  tests,
+  courses,
+  now,
+}: {
+  studyPlans: StudyPlan[];
+  tests: Assessment[];
+  courses: Course[];
+  now: Date | null;
+}) {
+  const plan = now
+    ? studyPlans.find((p) => daysUntil(p.startDate, now) >= 0)
+    : studyPlans[0];
+  const test = plan ? tests.find((t) => t.id === plan.testId) : undefined;
+  const course = plan ? courseFor(courses, plan.courseCode) : undefined;
+  const accent = accentClasses[course?.accent ?? "sta"];
+  const startsIn = plan && now ? daysUntil(plan.startDate, now) : null;
+  const isStartingToday = startsIn !== null && startsIn <= 0;
+
   return (
-    <BentoTile className="md:col-span-2">
+    <BentoTile
+      glow={course?.accent ?? "neutral"}
+      urgent={isStartingToday}
+      className="md:col-span-2"
+    >
       <h2 className="text-sm font-medium text-muted">Active study plan</h2>
-      <p className="mt-2 text-base text-muted">
-        No active study plan yet. Plans are generated per test as one
-        approaches —{" "}
-        <Link
-          href="/planner"
-          className="text-text underline underline-offset-2 hover:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-        >
-          view the planner
-        </Link>
-        .
-      </p>
+      {!plan ? (
+        <p className="mt-2 text-base text-muted">
+          No active study plan yet. Plans are generated per test as one
+          approaches —{" "}
+          <Link
+            href="/planner"
+            className="text-text underline underline-offset-2 hover:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            view the planner
+          </Link>
+          .
+        </p>
+      ) : (
+        <div className="mt-2 flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <span className={`font-display text-xl ${accent.text}`}>
+              {plan.courseCode}
+            </span>
+            <p className="text-base text-text">{test?.title ?? plan.testId}</p>
+            <Link
+              href={`/planner/${plan.testId}`}
+              className="w-fit text-sm text-muted underline underline-offset-2 hover:text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              View timeline
+            </Link>
+          </div>
+          {startsIn !== null && (
+            <span className="shrink-0 text-sm font-medium text-text">
+              {startsIn > 0
+                ? `Starts in ${startsIn} day${startsIn === 1 ? "" : "s"}`
+                : startsIn === 0
+                  ? "Start today"
+                  : "In progress"}
+            </span>
+          )}
+        </div>
+      )}
     </BentoTile>
   );
 }
@@ -257,10 +307,12 @@ export function DashboardView({
   courses,
   sessions,
   tests,
+  studyPlans,
 }: {
   courses: Course[];
   sessions: Session[];
   tests: Assessment[];
+  studyPlans: StudyPlan[];
 }) {
   const [now, setNow] = useState<Date | null>(null);
 
@@ -274,6 +326,10 @@ export function DashboardView({
     };
   }, []);
 
+  const planStartingNow = now
+    ? studyPlans.some((p) => daysUntil(p.startDate, now) <= 0)
+    : false;
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 md:px-6">
       <header className="flex flex-col gap-2">
@@ -285,10 +341,20 @@ export function DashboardView({
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <NextClassTile sessions={sessions} courses={courses} now={now} />
-        <NextTestTile tests={tests} courses={courses} now={now} />
+        <NextTestTile
+          tests={tests}
+          courses={courses}
+          now={now}
+          urgent={!planStartingNow}
+        />
         <ThisWeekTile sessions={sessions} courses={courses} now={now} />
         <UrgentFlagsTile tests={tests} sessions={sessions} now={now} />
-        <ActivePlanTile />
+        <ActivePlanTile
+          studyPlans={studyPlans}
+          tests={tests}
+          courses={courses}
+          now={now}
+        />
       </div>
     </div>
   );
