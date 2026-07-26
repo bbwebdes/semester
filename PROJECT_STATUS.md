@@ -1,34 +1,29 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — step 4 complete
+> Last updated: 2026-07-26 — step 5 complete
 
 ## Current state (one paragraph)
 
-Steps 1–4 are built. Owner authorized batching steps 4+ back-to-back this session without
-stopping for review each time (see memory); still committing/pushing and updating this
-file after every step per CLAUDE.md's git discipline, just not pausing. Step 1: Next.js 16 (App Router, TypeScript, Tailwind v4) scaffolded,
-design tokens + both Google Fonts wired, nav shell with placeholder routes. Step 2: the
-data layer — `/data/types.ts` + `courses`/`timetable`/`tests`/`moduleUpdates`/`studyPlans`
-seeded from the real outlines in `/course-docs`. Step 3: `/timetable` now renders real
-content — a desktop `<table>`-based weekly grid (semantic rowSpan/colSpan, 08:00–18:00 in
-15-min rows) colour-coded by module accent, a `md:hidden` mobile agenda with a day-switcher,
-overlap-based clash detection (`lib/timetable.ts`, date-fns `areIntervalsOverlapping`), a
-live now/next indicator (client-side clock, `Now`/`Next` badges + today's column
-highlighted), and an unresolved "Set your slot" panel for the one session whose day/time
-genuinely isn't chosen yet (CSC1016S practical). The owner supplied real chosen-slot
-screenshots from Amathuba (`course-docs/*.png`) this session, which resolved three of the
-four previously-`tbc` slots — see decisions log. Architecture stays as agreed: typed data
+Steps 1–5 are built. Owner authorized batching steps 4+ back-to-back this session without
+stopping for review each time (see memory); still committing/pushing and updating this file
+after every step per CLAUDE.md's git discipline, just not pausing. Steps 1–2: Next.js 16 +
+Tailwind v4 scaffold with tokens/fonts/nav, and the typed `/data` layer seeded from
+`/course-docs`. Step 3: `/timetable` — colour-coded `<table>` weekly grid + mobile agenda,
+clash detection, live now/next, a "Set your slot" panel for the one genuinely-unset session
+(CSC1016S practical). Step 4: `/` — a Magic-Bento-style dashboard (`BentoTile` with
+cursor-glow hover + an amber Star Border on the single most urgent tile) showing next
+class, next test + live countdown, this week, urgent flags, and an honest empty-state
+active-plan tile (no plans until step 7). Step 5: `/modules` — a Tilted Card grid (subtle
+pointer-tilt, `prefers-reduced-motion` disables it) linking to `/modules/[code]`, which
+shows convenor/contacts, a real per-course schedule (pulled from `/data/timetable.ts`, not
+hardcoded), assessment weights + final-mark formula, DP rules, and a soonest-first
+`moduleUpdates` feed with past items visually de-emphasised. `lib/tests.ts` and
+`lib/accent.ts` hold shared countdown/clash and module-accent helpers respectively, reused
+across dashboard/modules (and soon tests/planner). Architecture stays as agreed: typed data
 in `/data` as the single source of truth, Claude Code as the ingestion engine (no runtime
-API, no database), `localStorage` only for ephemeral personal state. Step 4: `/` now
-renders a real Magic-Bento-style dashboard (`app/dashboard-view.tsx` + a shared
-`BentoTile` with a cursor-following hover glow and an amber "Star Border" pulse reserved for
-the single most urgent tile) — Next class, Next test + live countdown, This week (next 4
-sessions), Urgent flags (date clashes, `confirm` counts, unset timetable slots), and an
-honest empty state for Active study plan (no plans exist until step 7). `lib/tests.ts`
-adds date-based countdown/clash helpers alongside `lib/timetable.ts`; `lib/accent.ts` now
-centralises the module-accent class map so it isn't duplicated per page. Next action is
-build-order step 5 (modules).
+API, no database), `localStorage` only for ephemeral personal state. Next action is
+build-order step 6 (test dates).
 
 ## Section tracker
 
@@ -38,7 +33,7 @@ build-order step 5 (modules).
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
 | Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. |
 | Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
-| Modules | todo | Step 5. `/modules` Tilted Cards + `/modules/[code]` detail + update feed |
+| Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
 | Test dates | todo | Step 6. `/tests` list, countdowns, clash flags, `confirm` markers, plan links |
 | Study planner | todo | Step 7. `/planner` + Scroll Stack timeline; generation command; localStorage check-offs |
 | Polish / a11y / perf | todo | Step 8. Specular Button, Star Border, Gradual Blur; responsive 360; Lighthouse ≥90; deploy |
@@ -79,9 +74,29 @@ padding from step 1 already reserves room for the dock). Reduced-motion re-check
 hover spotlight is a plain opacity fade (not gated, since it isn't motion), the tile-scale
 hover and the Star Border pulse are both gated behind `useReducedMotion`.
 
+Step 5 (`/modules`, `/modules/[code]`): build/lint clean; all 3 course detail routes
+confirmed statically generated (`generateStaticParams`). Playwright screenshots at
+360/768/1440 plus a full-page check of all three module codes. Manual contrast check
+caught a real bug before it could ship: the "past updates dim" treatment used a blanket
+`opacity-50` on the whole list item, which combined with the already-reduced
+`text-muted/70` source line to land at 2.66:1 (body) and worse — well under the 4.5:1
+floor. Fixed by dropping opacity entirely: past items now swap `text-text`→`text-muted`
+for the title and `accent.border`→`border-line` for the left bar (both real, pre-validated
+colours), and the source line lost its unnecessary `/70`. Verified the fix live: MAM's
+22 Jul tutorial-signup update (now in the past) renders dimmed and legible; CSC's 27 Jul
+sick-note update (still upcoming) renders at full brightness — both against the real
+"today" of 26 Jul. Also caught and fixed the schedule list rendering sessions in data-array
+order instead of weekday order (Mon/Tue/Wed/Thu/Fri/Wed/Tue) — now sorted properly.
+
+One known limitation accepted rather than engineered around: the past/future update split
+is computed server-side at build/prerender time, not with a live client clock like the
+timetable's now/next — it will only refresh on the next push+redeploy, not continuously.
+Low-stakes (cosmetic de-emphasis only) and consistent with the project's no-live-backend,
+redeploy-on-push content model, so not worth splitting into a client sub-component now.
+
 ## In progress
 
-Nothing in progress. Step 4 complete; continuing straight to step 5 (batched, see memory).
+Nothing in progress. Step 5 complete; continuing straight to step 6 (batched, see memory).
 
 ## Decisions log
 
@@ -164,6 +179,21 @@ used for Pill Nav/Bottom Dock in step 1. The one animated exception, the amber S
 pulse on the most-urgent tile, uses a plain looping opacity animation rather than a
 conic-gradient spin, since the standard "animated gradient border via masked conic-gradient"
 trick needs `@property` (patchy browser support) — simpler and equally readable.
+(2026-07-26) — Tilted Card (step 5) is likewise hand-built: pointer position drives
+`--tilt-x`/`--tilt-y` CSS custom properties via a ref (no re-render), `perspective()
+rotateX() rotateY()` in an inline style, guarded by `useReducedMotion` — same pattern
+as the dashboard's spotlight and the timetable's earlier hover work. Consistent "adapt the
+react.bits *effect*, hand-build the code" approach across all four react.bits-inspired
+components shipped so far (Pill Nav, Bottom Dock, Magic Bento, Tilted Card).
+(2026-07-26) — Module detail's "past updates dim" fix (see quality gates) replaced opacity
+math with real colour-token swaps (`text-text`→`text-muted`, `accent.border`→`border-line`)
+specifically so contrast stays provably correct regardless of how many effects stack —
+established as the preferred pattern over opacity-based de-emphasis anywhere text is
+involved, going forward.
+(2026-07-26) — Module schedule section reuses `/data/timetable.ts` (filtered by
+`courseCode`, sorted by weekday then start time) rather than re-describing venues/times as
+freeform text — keeps a single source of truth; a timetable data edit automatically shows
+up on the matching module page too.
 
 ## Blockers / needs owner input
 
@@ -198,6 +228,7 @@ trick needs `@property` (patchy browser support) — simpler and equally readabl
 
 ## Next up
 
-**Step 5** — modules: `/modules` grid of Tilted Cards (accent-bordered) + `/modules/[code]`
-detail (convenor/contacts/weights/DP rules + a soonest-first `moduleUpdates` feed, past
-items dimmed). Continuing immediately (batched — see memory).
+**Step 6** — test dates: `/tests` list, soonest-first, with countdowns, weight, venue, a
+link to a study plan if one exists (none yet), same-day clash flags (reusing
+`lib/tests.ts`'s `findDateClashes`), and `confirm` markers. Continuing immediately
+(batched — see memory).
