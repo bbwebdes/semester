@@ -72,7 +72,8 @@ edit only. `localStorage` for ephemeral personal state (task check-offs) only.
 (2026-07-26) — Step 1 scaffolded with Next.js 16 (satisfies "14+") and Tailwind v4;
 Tailwind v4 uses a CSS-first `@theme` block in `globals.css` instead of `tailwind.config.*`
 for token definitions — functionally equivalent, no config file needed.
-(2026-07-26) — GitHub repo created and pushed: see remote `origin` for URL.
+(2026-07-26) — GitHub repo created and pushed: https://github.com/bbwebdes/semester
+(public, per owner choice).
 
 ## Blockers / needs owner input
 
