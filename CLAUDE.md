@@ -31,11 +31,14 @@ note), flag it for owner confirmation — do not silently pick one.**
 - Assessments: Test 1 (25%), Test 2 (25%), Assignment 1 (20%), Practical Test (10%),
   Assignment 2 (20%). Final = 0.3·class + 0.7·exam. DP: both assignments done, ≥40% avg
   assignment, class record ≥35%.
-- Dates: Test 1 — 2 Sep, 18:00–20:00, JD LT2 & James LT 4A. Test 2 — 13 Oct,
+- Dates: Test 1 — 1 Sep, 18:00–20:00, JD LT2 & James LT 4A. Test 2 — 12 Oct,
   18:00–20:00, JD LT2 & James LT 4A. Practical Test — TBC. Assignment 2 — 19 Oct.
-  Assignment 1 — TBC. **Verify flag:** the outline's prose ("Tuesday 2 Sep", "Monday 13
-  Oct") disagrees with its schedule grid ("1 Sep", "12 Oct") and the weekday names don't
-  match the 2026 calendar. Seed the prose dates, mark `confirm: true`, confirm on Amathuba.
+  Assignment 1 — TBC. **Confirmed 2026-07-26:** the outline's prose ("Tuesday 2 Sep",
+  "Monday 13 Oct") disagreed with its schedule grid ("1 Sep", "12 Oct"); convenor Birgit
+  Erni confirmed via Amathuba post that the grid dates (1 Sep, 12 Oct) are correct — the
+  outline has been updated to match. No longer needs a `confirm` flag.
+- R sessions: online introduction to R — Tue 2pm (one-off, week of 27 Jul). R workshops
+  run weekly throughout the semester, Wed/Thu/Fri 14:00–16:00.
 
 **CSC1016S — Computer Science** (accent: `csc`, green)
 - Convenor: Mr Aslam Safla (aslam@cs.uct.ac.za). Sick notes: sick-csc1016s@cs.uct.ac.za.
@@ -69,9 +72,12 @@ note), flag it for owner confirmation — do not silently pick one.**
 - Dates: Test 1 — Mon 24 Aug, 18:00–19:30. Test 2 — Tue 6 Oct, 18:00–19:30. Venues TBC
   for both (no internal inconsistency in this source — weekdays match the 2026 calendar).
 
-**Known clash to surface:** STA2005S Test 1 and MAM2013S Test 1 are both dated **2 Sep**.
-The Tests view must flag same-day/overlapping assessments — this is the flagship example
-of why this dashboard exists.
+**Formerly-flagged clash, now resolved:** STA2005S Test 1 was seeded at 2 Sep pending
+date confirmation, the same day as MAM2013S Test 1. The convenor has since confirmed
+STA2005S Test 1 is actually **1 Sep** — the two tests are on consecutive days, not the
+same day, so this is no longer a real clash. Still a good illustration of why the Tests
+view's same-day/overlap flagging matters; the clash-detection logic itself is unchanged
+and remains fully data-driven (no hardcoded dates in components).
 
 ## Stack (do not substitute)
 

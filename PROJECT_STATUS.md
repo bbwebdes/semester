@@ -1,8 +1,8 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-27 — CSC1016S moved to owner's intended Tue 11am slot, convenor
-> announcement ingested (see below)
+> Last updated: 2026-07-27 — STA2005S test dates confirmed by convenor (1 Sep/12 Oct),
+> resolving the long-flagged STA/MAM clash; R session times corrected (see below)
 
 ## Current state (one paragraph)
 
@@ -451,6 +451,24 @@ a new one against MAM2013S's just-confirmed Tue 12:00 lecture — verified live 
 `/timetable`'s clash banner picks it up automatically ("2 sessions overlap another session"
 listing both courses), so no code change was needed, only data. See Blockers for the updated
 real-world conflict and the very-near sign-up expiry (28 Jul, 10am) worth double-checking.
+(2026-07-27) — STA2005S test dates resolved: convenor Birgit Erni posted on Amathuba
+(26 Jul, 1:15pm, edited) confirming the correct dates are 1 September and 12 October —
+the grid dates, not the prose dates seeded in step 2 with `confirm: true`. Updated
+`tests.ts` (`sta-test-1` → 2026-09-01, `sta-test-2` → 2026-10-12, both `confirm` flags
+removed) and `moduleUpdates.ts` (replaced the two stale "verify on Amathuba" reminders
+with a single confirmation entry). This also resolves CLAUDE.md's flagship STA/MAM
+"same-day clash" example: MAM2013S Test 1 is still 2 Sep, so the two tests are now on
+consecutive days, not the same day — verified the `/tests` and `/` clash banners no
+longer fire for this pair (clash detection is fully data-driven, no code change needed).
+Also corrected two R-session details from an owner follow-up message (no source document,
+message treated as equivalent to an `/inbox` drop per the ingestion workflow's intent):
+the R online introduction to R is Tuesday 2pm, not Wednesday as previously announced, and
+R workshops run weekly throughout the semester on Wed/Thu/Fri 14:00–16:00 — logged as a
+`moduleUpdates` info-session entry. Left `timetable.ts` untouched for the R workshops:
+unlike the confirmed Tue prac slot and Wed tutorial already in `timetable.ts` (both from
+real Amathuba screenshots), it's not established which single workshop day/time (if any)
+becomes a fixed weekly commitment versus a set of optional drop-in times, so this stays a
+`moduleUpdates` note rather than a guessed timetable entry. Build clean.
 (2026-07-27) — Owner explicitly asked to move CSC1016S to Tue 11:00 on the timetable *now*,
 ahead of actually re-confirming it on Amathuba or speaking to the convenor — an explicit
 instruction to seed intent rather than wait for confirmation, unlike every other slot change
@@ -492,12 +510,6 @@ for the detail.
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.
   Default assumption: Sonnet 4.6 for ~everything, Opus 4.8 only for hard schema/debugging
   work. On Pro this is comfortably within limits for this scope.
-- **STA2005S test dates** — outline prose ("Tue 2 Sep", "Mon 13 Oct") disagrees with its
-  schedule grid ("1 Sep", "12 Oct"), and neither date matches its own claimed weekday in
-  the 2026 calendar (1 Sep is a Tuesday, 2 Sep a Wednesday; 12 Oct a Monday, 13 Oct a
-  Tuesday). Seeded the prose dates (2 Sep / 13 Oct) with `confirm:true` per CLAUDE.md;
-  confirm the real dates/times on Amathuba — this also determines whether the flagged
-  2 Sep STA/MAM clash is real.
 - **CSC1016S practical session slot** — still genuinely unset; no Amathuba group screenshot
   for it yet (unlike the lecture, which is confirmed Mon 11:00). Seeded `tbc:true`.
 - **STA2005S Practical Test date, Assignment 1 date** — not yet announced anywhere in the
