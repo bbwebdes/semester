@@ -168,7 +168,7 @@ Restraint is the brief: a daily tool, not a showreel. Each component earns a slo
 - **Scroll Stack** — the study-plan timeline (`/planner/[testId]`): phases/days stack as
   you scroll toward the test date. (Owner flagged this "must use"; this is its home.)
 - **Pill Nav Bar** (desktop, top) + **Bottom Dock** (mobile) — nav across Dashboard ·
-  Timetable · Modules · Planner · Tests.
+  Timetable · Modules · Concepts · Planner · Tests.
 - **Tilted Card** — module tiles on `/modules` (subtle hover, module accent).
 - **Specular Button** — primary actions (the amber CTA). **Star Border** — reserved for
   the single most-urgent card (nearest test / "start studying today"), so urgency reads
@@ -218,6 +218,7 @@ assessments show a "verify on Amathuba" marker.
 - `/` — Dashboard (Magic Bento)
 - `/timetable`
 - `/modules`, `/modules/[code]`
+- `/concepts`
 - `/planner`, `/planner/[testId]`
 - `/tests`
 
@@ -246,6 +247,52 @@ Run this Claude Code prompt when a test approaches:
 
 Keep plans scope-and-schedule only (topics, timing, tasks, resources) — not worked
 solutions or written coursework.
+
+## Concept Briefing (`/concepts`)
+
+**Purpose.** A glanceable, per-concept reference covering every concept and
+sub-concept in the owner's course notes, for two moments: priming right before a
+lecture, and consolidating right after. Probability/statistics concepts get extra
+care (intuition-first explanation, an extra worked micro-example, populated `tips`)
+since that's the owner's weak spot. **This is a personal study scaffold only** — see
+the disclaimer below.
+
+**Source of truth.** `/course-docs/{MAM2012S,MAM2013S,MAM2014S,STA2005S}` and (once
+notes exist) `/course-docs/CSC1016S`. The concept and sub-concept list is extracted
+from the notes themselves — never invented. Where notes are ambiguous, the briefing
+reflects the notes' own framing rather than guessing, and only covers what's actually
+been transcribed so far (a module's briefings may lag its full syllabus if later
+weeks' notes haven't been ingested yet — see each module's data file for what's
+covered).
+
+**Data model.** `/data/types.ts` defines `ConceptBriefing` (one record per concept):
+`id`, `courseCode` (typed as `ConceptModuleCode = CourseCode | "MAM2012S"` — concept
+briefings are keyed by note-set, not by dashboard registration status, so a module
+like MAM2012S can get briefings before it's a tracked `CourseCode` elsewhere), plus
+`sourceRef`, `title`, `tags`, `difficulty` (`core | stretch | hard`), `summary`,
+`subConcepts[]` (`{ title, gloss }`), `preLecture[]`, `learningPath[]`,
+`applications[]`, `examples[]`, `resources[]` (`{ label, href }`), and an optional
+`tips[]` (populated by default for probability/statistics concepts, and for any
+`stretch`/`hard` concept). One typed file per module in `/data/concepts/` (e.g.
+`sta2005s.ts`), aggregated by `/data/concepts/index.ts`; `/data/concepts/modules.ts`
+drives the page's module grouping/ordering/accent and empty states, reusing each
+tracked course's real accent token where one exists (falls back to neutral styling
+for a module, like MAM2012S, that isn't tracked elsewhere in the dashboard yet).
+
+**Content rules.** Pitch at rigorous 2nd-year level — correct definitions, stated
+assumptions, the actual theorem where one exists — but lead with intuition.
+Completeness lives in `subConcepts`; the `summary` stays brief. Mathematical accuracy
+is non-negotiable; reflect the notes' own framing rather than guessing where they're
+ambiguous.
+
+**Link rules.** Never fabricate a URL. Prefer channel/course-level links (StatQuest,
+3Blue1Brown, MIT OCW, Khan Academy) over single videos to minimise link-rot, and only
+include a link that's been verified to resolve.
+
+**Disclaimer.** These briefings are pre/post-lecture revision aids only — never
+submitted work, and not a substitute for a course's own materials. They must respect
+each course's AI-use policy (STA2005S's is strict). The `/concepts` page footer states
+this; keep it there if the page is restructured.
 
 ## Quality floor (non-negotiable)
 

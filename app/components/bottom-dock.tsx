@@ -13,7 +13,10 @@ export function BottomDock() {
       className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-surface/95 backdrop-blur md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <ul className="grid grid-cols-5">
+      <ul
+        className="grid"
+        style={{ gridTemplateColumns: `repeat(${navLinks.length}, minmax(0, 1fr))` }}
+      >
         {navLinks.map((link) => {
           const isActive =
             link.href === "/"

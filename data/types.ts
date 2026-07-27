@@ -90,3 +90,38 @@ export type StudyPlan = {
   phases: StudyPlanPhase[];
   resources: StudyPlanResource[];
 };
+
+// Concept briefings are keyed by note-set, not by dashboard registration status —
+// this lets a module with real transcribed notes (e.g. MAM2012S, pending registration
+// confirmation) get briefings before it's added as a tracked `CourseCode` elsewhere in
+// the app (courses.ts/timetable.ts/tests.ts). Extend here as new note-sets arrive.
+export type ConceptModuleCode = CourseCode | "MAM2012S";
+
+export type ConceptDifficulty = "core" | "stretch" | "hard";
+
+export type ConceptSubConcept = {
+  title: string;
+  gloss: string;
+};
+
+export type ConceptResource = {
+  label: string;
+  href: string;
+};
+
+export type ConceptBriefing = {
+  id: string;
+  courseCode: ConceptModuleCode;
+  sourceRef: string;
+  title: string;
+  tags: string[];
+  difficulty: ConceptDifficulty;
+  summary: string;
+  subConcepts: ConceptSubConcept[];
+  preLecture: string[];
+  learningPath: string[];
+  applications: string[];
+  examples: string[];
+  resources: ConceptResource[];
+  tips?: string[];
+};

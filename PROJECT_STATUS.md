@@ -1,8 +1,8 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-27 — STA2005S test dates confirmed by convenor (1 Sep/12 Oct),
-> resolving the long-flagged STA/MAM clash; R session times corrected (see below)
+> Last updated: 2026-07-27 — Concept Briefing feature started: `/concepts` built with
+> STA2005S's first 4 concepts live; MAM2013S/MAM2014S/MAM2012S/CSC1016S in progress
 
 ## Current state (one paragraph)
 
@@ -104,6 +104,11 @@ practical-test entries already there.
 
 | Section | Status | Notes |
 |---|---|---|
+| Concept Briefing — STA2005S | done | `/concepts` built end to end: types, `/data/concepts/{sta2005s,modules,index}.ts`, `ConceptCard`/`ConceptsView` UI (search + difficulty/tag filters, expand-in-place cards, grouped by module then source deck), nav link. 4 concepts transcribed from the only notes released so far (Week 1: course intro, MVN distribution deck, its Q&A) — intro to regression, the MVN distribution, linear transformations/partitions of MVN, quadratic forms & chi-square. Build/lint clean; Playwright screenshots 360/768/1440 + expanded-card state, zero console errors. |
+| Concept Briefing — MAM2013S | todo | Notes exist (`MAM2013S NOTES.pdf`), not yet ingested this pass. |
+| Concept Briefing — MAM2014S | todo | Notes exist (`MAM2014S NOTES.pdf`), not yet ingested this pass. |
+| Concept Briefing — MAM2012S | todo | Notes exist (`2DE NOTES.pdf`); course itself is still pending registration confirmation (see Blockers) so it's modelled via the new `ConceptModuleCode` type rather than the core `CourseCode` union — see decisions log. |
+| Concept Briefing — CSC1016S | blocked | No notes exist in `course-docs` yet (per instruction, not fabricated). Already wired into the `/concepts` UI via the real `courses` array, rendering an honest "no notes ingested yet" empty state — will populate automatically once notes are added and a data file is created. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
 | Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. |
@@ -217,12 +222,13 @@ clash it surfaced.
 
 ## In progress
 
-Nothing in progress. Ran the scheduled final QA pass (owner asleep, usage limit had reset):
-applied the owner's MAM2014S lecture-slot choice (Period 4, 11:00, confirmed via a quick
-message before the reset), then `npm run build` + `npm run lint` + a full Playwright sweep
-of all 10 routes (zero console/page errors) + a fresh Lighthouse run on the two changed
-pages. Found and fixed one real gap; found and surfaced one real scheduling conflict that
-isn't a bug — see decisions log and Blockers. Full build order is done except deploy.
+Building the new **Concept Briefing** feature (`/concepts`), owner-requested new scope
+beyond the original build order (which is otherwise complete except deploy — see
+Blockers). Owner authorized continuing through all modules autonomously without
+pausing for review between them, since they're offline and on Pro-plan budget for the
+rest of this session (see memory). STA2005S is done (see section tracker); working
+through MAM2013S, MAM2014S, MAM2012S, and a CSC1016S scaffold next, one module at a
+time, committing after each.
 
 ## Decisions log
 
@@ -478,6 +484,30 @@ screenshot-backed corrections above it. Also ingested the CSC1016S convenor's fu
 announcement (blended learning structure, lecture sign-up mechanics, Assignment 1 release,
 practical start date) into `moduleUpdates.ts` — see the paragraph above the section tracker
 for the detail.
+
+(2026-07-27) — Concept Briefing feature started. `ConceptBriefing.courseCode` reuses the
+existing `courseCode` field name (matching `timetable.ts`/`tests.ts`/`moduleUpdates.ts`)
+rather than the brief's suggested `module` name — per CLAUDE.md's own instruction to
+prefer an existing repo convention when one already exists and conflicts.
+(2026-07-27) — Introduced `ConceptModuleCode = CourseCode | "MAM2012S"`, a wider type
+used only by the concept-briefing feature, rather than adding MAM2012S to the core
+`CourseCode` union. Reasoning: `CourseCode`/`Course`/`timetable.ts`/`tests.ts` represent
+*tracked, registered* dashboard courses, and MAM2012S is explicitly still pending
+registration confirmation (see Blockers) — adding it there would mean fabricating a
+`Course` entry (contacts, weights, DP rules) not yet supplied. Concept briefings are
+purely notes-driven, so they don't need to wait on registration. `/data/concepts/modules.ts`
+drives `/concepts`'s module grouping and gives MAM2012S neutral (non-accented) card
+styling until it's confirmed and picks up a real design-token accent, mirroring how
+MAM2014S itself had no accent before it became a tracked course.
+(2026-07-27) — Resource links (StatQuest, 3Blue1Brown, Khan Academy, MIT OCW 18.650)
+verified to resolve via WebFetch before inclusion, and kept at channel/course level
+rather than linking specific videos, per the feature's link-rot rule.
+(2026-07-27) — STA2005S concept briefings only cover Week 1's actual released content
+(course intro + the MVN/quadratic-forms slide deck and its Q&A) even though the course
+outline names Weeks 2–6 topics (GLM formulation, inference, ANOVA, variable
+selection/Gauss-Markov, PCA/bootstrapping) and a later experimental-design section —
+none of those have notes in `course-docs` yet, so nothing was fabricated for them.
+Revisit once more weeks are ingested into `course-docs/STA2005S`.
 
 ## Blockers / needs owner input
 
