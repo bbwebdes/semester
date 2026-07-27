@@ -1,8 +1,8 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-27 — Concept Briefing feature: STA2005S, MAM2013S and MAM2014S
-> concepts live in `/concepts`; MAM2012S/CSC1016S in progress
+> Last updated: 2026-07-27 — Concept Briefing feature: STA2005S, MAM2013S, MAM2014S and
+> MAM2012S concepts live in `/concepts`; CSC1016S scaffold-only remains
 
 ## Current state (one paragraph)
 
@@ -107,7 +107,7 @@ practical-test entries already there.
 | Concept Briefing — STA2005S | done | `/concepts` built end to end: types, `/data/concepts/{sta2005s,modules,index}.ts`, `ConceptCard`/`ConceptsView` UI (search + difficulty/tag filters, expand-in-place cards, grouped by module then source deck), nav link. 4 concepts transcribed from the only notes released so far (Week 1: course intro, MVN distribution deck, its Q&A) — intro to regression, the MVN distribution, linear transformations/partitions of MVN, quadratic forms & chi-square. Build/lint clean; Playwright screenshots 360/768/1440 + expanded-card state, zero console errors. |
 | Concept Briefing — MAM2013S | done | 12 concepts transcribed from the full `MAM2013S NOTES.pdf` (Introductory Algebra, 2IA): Ch1 Integers (induction, divisibility/gcd/Bézout, congruences/ℤₙ), Ch2 Permutations (cycles, parity/alternating group), Ch3 Groups (definition/Cayley tables, subgroups/centre, cyclic groups, homomorphisms/isomorphisms), Ch4 Lagrange's Theorem, Ch5 Factor groups (normal subgroups, First Isomorphism Theorem). Appendix A (sets/maps/equivalence relations) folded into the induction card's pre-lecture prereqs rather than given its own card, since the notes treat it as background review. Build/lint clean; Playwright screenshot 1440px, zero console errors. |
 | Concept Briefing — MAM2014S | done | 20 concepts transcribed from the full `MAM2014S NOTES.pdf` (Real Analysis, 2RA): Ch0 Preliminaries (sets/number systems), Ch1 The real numbers (induction/√2 irrationality, completeness axiom, consequences of completeness, cardinality), Ch2 Sequences and series (limits, Monotone Convergence Theorem, series basics, comparison/p-series, subsequences/Bolzano-Weierstrass, Cauchy sequences, absolute/conditional convergence, ratio/root tests, rearrangements), Ch3 Topology of ℝ, Ch4 Limits of functions/continuity/uniform continuity, Ch5 Derivatives & the MVT family, Ch6 Sequences/series of functions and power/Taylor series. Cardinality, uniform continuity, and rearrangements marked `stretch`; power series/Taylor series marked `hard` (with `tips`, since it's the most demanding topic in the course). Build/lint clean; Playwright screenshots 360/1440 + an expanded-card check, zero console errors. |
-| Concept Briefing — MAM2012S | todo | Notes exist (`2DE NOTES.pdf`); course itself is still pending registration confirmation (see Blockers) so it's modelled via the new `ConceptModuleCode` type rather than the core `CourseCode` union — see decisions log. |
+| Concept Briefing — MAM2012S | done | 19 concepts transcribed from the full `2DE NOTES.pdf` (MAM2000W - 2DE: Differential Equations): Ch1 linear independence/Wronskian; Ch2 homogeneous/nonhomogeneous constant-coefficient ODEs, the annihilator method, variation of parameters, Cauchy-Euler equations; Ch3 diagonalisable systems, the matrix exponential, generalised eigenvectors, Jordan normal forms, complex eigenvalues in systems, nonhomogeneous systems; Ch4 the heat equation/separation of variables, orthogonality/Fourier coefficients, Fourier series & convergence, term-by-term differentiation/integration, the Fourier transform, and the Black-Scholes equation. Course itself is still pending registration confirmation (see Blockers) so it's modelled via `ConceptModuleCode` rather than the core `CourseCode` union — see decisions log. Generalised eigenvectors, Jordan normal form, term-by-term differentiation, the Fourier transform, and Black-Scholes marked `hard`/`stretch` with `tips` populated on the hardest ones. Build/lint clean; Playwright screenshots 360/768/1440 + an expanded hard-card check (Black-Scholes), zero console errors. |
 | Concept Briefing — CSC1016S | blocked | No notes exist in `course-docs` yet (per instruction, not fabricated). Already wired into the `/concepts` UI via the real `courses` array, rendering an honest "no notes ingested yet" empty state — will populate automatically once notes are added and a data file is created. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
@@ -519,6 +519,21 @@ flagging); `power-series-taylor-series` marked `hard` with `tips` populated, sin
 notes themselves flag it as the most demanding synthesis topic (combines the Ratio/Root
 Tests, the Weierstrass M-Test, the Differential Limit Theorem, and the Mean Value Theorem
 family all at once).
+(2026-07-27) — MAM2012S concept briefings (19 concepts) transcribed from the full
+`2DE NOTES.pdf` (MAM2000W - 2DE, Differential Equations — matrix algebra/Fourier
+analysis/PDE content is in later parts of the same document not yet needed for these
+19 cards). Verified two new resource links via WebFetch: MIT OCW 18.03 Differential
+Equations (primary resource across all cards) and MIT OCW 18.06 Linear Algebra (for the
+systems-of-ODEs/eigenvalue-heavy cards); reused the already-verified 3Blue1Brown and
+Socratica channels where fitting. Also verified MIT OCW 18.S096 (Topics in Mathematics
+with Applications in Finance) specifically for the Black-Scholes card, given this course
+is the one most directly relevant to the owner's stated quant/ML/finance direction.
+`generalised-eigenvectors`, `jordan-normal-form`, `term-by-term-differentiation-
+integration`, `fourier-transform-infinite-domain`, and `black-scholes-equation` marked
+`hard`/`stretch` with `tips` populated on the four hardest, mirroring the notes' own
+explicit flags that these are the most demanding synthesis topics in the document
+(Jordan form combines nearly every earlier systems concept; Black-Scholes chains
+Cauchy-Euler + the full Fourier-transform heat-equation machinery from two other cards).
 
 ## Blockers / needs owner input
 
