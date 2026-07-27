@@ -64,10 +64,10 @@ export const timetable: Session[] = [
     courseCode: "CSC1016S",
     kind: "lecture",
     day: "Tue",
-    start: "12:00",
-    end: "12:45",
+    start: "11:00",
+    end: "11:45",
     venue: "JD LT2",
-    note: "Confirmed via Amathuba group sign-up (59/150) — corrects an earlier Mon 11:00–11:45 entry that doesn't match the real chosen group. Clashes with MAM2013S's Tue 12:00 lecture.",
+    note: "Owner's intended pick (not yet re-confirmed on Amathuba — planning to raise with the convenor). Ignore PeopleSoft/SEAT timetable per the convenor's announcement; whichever Amathuba group you join governs. Group sign-up runs until Tue 28 Jul 10:00am, 6 sessions on offer (11am/12pm, Mon–Wed).",
   },
   {
     courseCode: "CSC1016S",
@@ -77,7 +77,7 @@ export const timetable: Session[] = [
     end: "16:00",
     venue: "SCILAB (TBC)",
     tbc: true,
-    note: "One 2-hour practical session per week — slot chosen on Amathuba.",
+    note: "Weekly practicals start Mon 3 Aug; multiple sessions during the week, exact slot/venue/sign-up TBC — details due out during that week.",
   },
 
   // MAM2013S (2IA)

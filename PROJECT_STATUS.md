@@ -1,7 +1,8 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-27 — ingested Dr Janelidze-Gray's MAM2013S welcome email (see below)
+> Last updated: 2026-07-27 — CSC1016S moved to owner's intended Tue 11am slot, convenor
+> announcement ingested (see below)
 
 ## Current state (one paragraph)
 
@@ -78,6 +79,26 @@ slots, consistent with 15:00–16:00 for the "3pm" group. Corrected in `timetabl
 clash introduced (Thu 15:00 is otherwise free in the timetable). Re-checking `course-docs`
 for untracked files even on a narrowly-scoped request is worth doing — stale "confirmed"
 data is worse than `tbc` data because nothing on screen flags it as needing a second look.
+
+**Later same day — CSC1016S convenor announcement + explicit slot change:** The owner is
+planning to move CSC1016S off the previously-recorded Tue 12:00 group (see above) to **Tue
+11:00** instead, and asked for the timetable to reflect that now rather than waiting for the
+Amathuba re-pick to be finalized — `timetable.ts`/`courses.ts` updated accordingly, with a
+note that it's the owner's intended pick pending re-confirmation, not yet re-verified on
+Amathuba. This also resolves the CSC1016S/MAM2013S Tue 12:00 clash flagged just above it —
+verified live that `/timetable`'s clash banner no longer fires. Also ingested a full
+convenor (Aslam Safla) announcement: blended learning format (daily Mon–Thu video lectures,
+Lesson 1 released 27 Jul), the real mechanics of lecture sign-up (6 sessions, 11am/12pm
+Mon–Wed, sign-up closes Tue 28 Jul 10am, **ignore PeopleSoft/SEAT — the Amathuba group you
+join is authoritative every week**), Assignment 1 Parts A&B (self-paced setup tutorial,
+released Wed 29 Jul), and weekly practicals starting Mon 3 Aug (compulsory in-prac questions
+vs. take-home questions, missing a session forfeits the in-prac mark). All transcribed
+verbatim from the announcement into `moduleUpdates.ts` — cross-checked 28 Jul/29 Jul/3 Aug
+against the 2026 calendar (Tue/Wed/Mon respectively, all consistent with the source's own
+weekday claims, so no `confirm` flag needed). No separate `tests.ts` entry added for
+Assignment 1 — CLAUDE.md's CSC1016S weighting has no standalone "assignment" line, so this
+is modelled as part of the practical average via `moduleUpdates`, consistent with the
+practical-test entries already there.
 
 ## Section tracker
 
@@ -430,21 +451,28 @@ a new one against MAM2013S's just-confirmed Tue 12:00 lecture — verified live 
 `/timetable`'s clash banner picks it up automatically ("2 sessions overlap another session"
 listing both courses), so no code change was needed, only data. See Blockers for the updated
 real-world conflict and the very-near sign-up expiry (28 Jul, 10am) worth double-checking.
+(2026-07-27) — Owner explicitly asked to move CSC1016S to Tue 11:00 on the timetable *now*,
+ahead of actually re-confirming it on Amathuba or speaking to the convenor — an explicit
+instruction to seed intent rather than wait for confirmation, unlike every other slot change
+this session which followed real Amathuba evidence. Recorded as such in the session's `note`
+field and flagged in Blockers, rather than silently treated as equally confirmed as the
+screenshot-backed corrections above it. Also ingested the CSC1016S convenor's full welcome
+announcement (blended learning structure, lecture sign-up mechanics, Assignment 1 release,
+practical start date) into `moduleUpdates.ts` — see the paragraph above the section tracker
+for the detail.
 
 ## Blockers / needs owner input
 
-**⚠ Real timetable clash — needs a real-world decision, not a data fix:**
-- **UPDATE (2026-07-27): the previously-flagged Mon 11:00 MAM2014S/CSC1016S clash is now
-  moot** — a fresh Amathuba Groups screenshot showed CSC1016S's real confirmed lecture group
-  is actually Tue 12:00 (JD LT2, Period 5, 59/150), not the Mon 11:00 entry the data had
-  carried since 2026-07-26. That resolves the old Monday conflict, but opens a new one:
-  **CSC1016S (Tue 12:00, Period 5) directly clashes with MAM2013S (Tue 12:00, confirmed via
-  this session's welcome-email ingestion)**, both 12:00–12:45. This is a genuine two-course
-  conflict, not something the dashboard can resolve — it's surfaced on `/timetable`'s clash
-  banner (verified live against a production build). Worth raising with one of the
-  departments before it becomes a habit of missing one or the other. Also worth noting: the
-  CSC1016S sign-up's expiry showed as **28 July 2026, 10:00 AM** (i.e. tomorrow) — confirm on
-  Amathuba that Tuesday is actually locked in before relying on this.
+**Timetable clash history (resolved, but needs a real Amathuba re-confirmation):**
+- The Mon 11:00 MAM2014S/CSC1016S clash (flagged since 2026-07-26) and the Tue 12:00
+  CSC1016S/MAM2013S clash it was briefly replaced by (flagged earlier on 2026-07-27) are
+  both moot now: the owner is moving CSC1016S to **Tue 11:00**, which the dashboard reflects
+  as of this session — no session on the timetable currently clashes. **This slot is the
+  owner's stated intent, not yet re-confirmed on Amathuba** — the convenor's announcement
+  says sign-up for one of 6 sessions (11am/12pm, Mon–Wed) closes **Tue 28 Jul, 10:00am**, and
+  explicitly says whichever Amathuba group is actually joined governs (not PeopleSoft/SEAT).
+  If the Tue 11am group turns out to be full or unavailable, or a different slot ends up
+  chosen after speaking to the convenor, the timetable will need a follow-up correction.
 
 **The one thing left to reach full build-order completion:**
 - **Deploy to Vercel** — every other part of step 8 (and steps 1–7) is done. This is the
