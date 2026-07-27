@@ -1,8 +1,9 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-27 — Concept Briefing feature: STA2005S, MAM2013S, MAM2014S and
-> MAM2012S concepts live in `/concepts`; CSC1016S scaffold-only remains
+> Last updated: 2026-07-27 — Concept Briefing feature complete: STA2005S, MAM2013S,
+> MAM2014S and MAM2012S concepts live in `/concepts`; CSC1016S renders its honest
+> empty state. Final cross-module self-QA passed; see "In progress" below.
 
 ## Current state (one paragraph)
 
@@ -108,7 +109,7 @@ practical-test entries already there.
 | Concept Briefing — MAM2013S | done | 12 concepts transcribed from the full `MAM2013S NOTES.pdf` (Introductory Algebra, 2IA): Ch1 Integers (induction, divisibility/gcd/Bézout, congruences/ℤₙ), Ch2 Permutations (cycles, parity/alternating group), Ch3 Groups (definition/Cayley tables, subgroups/centre, cyclic groups, homomorphisms/isomorphisms), Ch4 Lagrange's Theorem, Ch5 Factor groups (normal subgroups, First Isomorphism Theorem). Appendix A (sets/maps/equivalence relations) folded into the induction card's pre-lecture prereqs rather than given its own card, since the notes treat it as background review. Build/lint clean; Playwright screenshot 1440px, zero console errors. |
 | Concept Briefing — MAM2014S | done | 20 concepts transcribed from the full `MAM2014S NOTES.pdf` (Real Analysis, 2RA): Ch0 Preliminaries (sets/number systems), Ch1 The real numbers (induction/√2 irrationality, completeness axiom, consequences of completeness, cardinality), Ch2 Sequences and series (limits, Monotone Convergence Theorem, series basics, comparison/p-series, subsequences/Bolzano-Weierstrass, Cauchy sequences, absolute/conditional convergence, ratio/root tests, rearrangements), Ch3 Topology of ℝ, Ch4 Limits of functions/continuity/uniform continuity, Ch5 Derivatives & the MVT family, Ch6 Sequences/series of functions and power/Taylor series. Cardinality, uniform continuity, and rearrangements marked `stretch`; power series/Taylor series marked `hard` (with `tips`, since it's the most demanding topic in the course). Build/lint clean; Playwright screenshots 360/1440 + an expanded-card check, zero console errors. |
 | Concept Briefing — MAM2012S | done | 19 concepts transcribed from the full `2DE NOTES.pdf` (MAM2000W - 2DE: Differential Equations): Ch1 linear independence/Wronskian; Ch2 homogeneous/nonhomogeneous constant-coefficient ODEs, the annihilator method, variation of parameters, Cauchy-Euler equations; Ch3 diagonalisable systems, the matrix exponential, generalised eigenvectors, Jordan normal forms, complex eigenvalues in systems, nonhomogeneous systems; Ch4 the heat equation/separation of variables, orthogonality/Fourier coefficients, Fourier series & convergence, term-by-term differentiation/integration, the Fourier transform, and the Black-Scholes equation. Course itself is still pending registration confirmation (see Blockers) so it's modelled via `ConceptModuleCode` rather than the core `CourseCode` union — see decisions log. Generalised eigenvectors, Jordan normal form, term-by-term differentiation, the Fourier transform, and Black-Scholes marked `hard`/`stretch` with `tips` populated on the hardest ones. Build/lint clean; Playwright screenshots 360/768/1440 + an expanded hard-card check (Black-Scholes), zero console errors. |
-| Concept Briefing — CSC1016S | blocked | No notes exist in `course-docs` yet (per instruction, not fabricated). Already wired into the `/concepts` UI via the real `courses` array, rendering an honest "no notes ingested yet" empty state — will populate automatically once notes are added and a data file is created. |
+| Concept Briefing — CSC1016S | done | No notes exist in `course-docs` yet (per instruction, not fabricated) — nothing to build. Confirmed the `/concepts` UI already renders an honest "No notes ingested for this module yet" empty state under its real title ("Computer Science", from `courses.ts`), verified live via Playwright; will populate automatically once notes are added and a data file is created. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
 | Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. |
@@ -222,13 +223,23 @@ clash it surfaced.
 
 ## In progress
 
-Building the new **Concept Briefing** feature (`/concepts`), owner-requested new scope
-beyond the original build order (which is otherwise complete except deploy — see
-Blockers). Owner authorized continuing through all modules autonomously without
-pausing for review between them, since they're offline and on Pro-plan budget for the
-rest of this session (see memory). STA2005S is done (see section tracker); working
-through MAM2013S, MAM2014S, MAM2012S, and a CSC1016S scaffold next, one module at a
-time, committing after each.
+The **Concept Briefing** feature (`/concepts`) is now complete — owner-requested new
+scope beyond the original build order (which is otherwise complete except deploy — see
+Blockers). Owner authorized continuing through all modules autonomously without pausing
+for review between them, since they were offline and on Pro-plan budget for the session
+(see memory); that authorization was used to go STA2005S → MAM2013S → MAM2014S →
+MAM2012S → CSC1016S scaffold check, one module at a time, committing after each (see
+section tracker for per-module detail). Final cross-module pass: full rebuild/lint
+clean; an 11-route Playwright sweep (`/`, `/timetable`, `/modules` ×5, `/concepts`,
+`/planner` ×2, `/tests`) with zero console/page errors; `/concepts` specifically
+re-checked under emulated `prefers-reduced-motion: reduce` (content unaffected) and via
+keyboard Tab traversal (focus reaches the search field, difficulty/tag chips, and card
+"show full briefing" toggles in a sensible order). Total: 51 concept briefings across
+4 modules (4 STA2005S + 12 MAM2013S + 20 MAM2014S + 19 MAM2012S), all cross-linked to
+real transcribed course-docs, none fabricated. Nothing else is planned for this feature
+unless the owner requests further scope (e.g. ingesting later STA2005S weeks, or
+MAM2012S's remaining matrix-algebra/vector-geometry/complex-numbers chapters not yet
+covered by these 19 differential-equations-focused cards).
 
 ## Decisions log
 
@@ -485,6 +496,15 @@ announcement (blended learning structure, lecture sign-up mechanics, Assignment 
 practical start date) into `moduleUpdates.ts` — see the paragraph above the section tracker
 for the detail.
 
+(2026-07-27) — `2DE NOTES.pdf`'s own cover page describes the course as covering
+"Differential equations, partial derivatives, vector geometry, matrix algebra, complex
+numbers, Taylor series" but its actual table of contents only has four chapters
+(Introduction, Linear ODEs, Systems of Linear ODEs, Linear PDEs) — vector geometry and
+a standalone Taylor-series/complex-numbers treatment are not present as separate content
+in this document (complex numbers/Taylor-series ideas do appear, but folded into the ODE
+chapters, e.g. complex eigenvalues, and are covered there). Transcribed only the
+chapters genuinely present (19 concepts) rather than fabricating cards for topics named
+on the cover but absent from the actual notes.
 (2026-07-27) — Concept Briefing feature started. `ConceptBriefing.courseCode` reuses the
 existing `courseCode` field name (matching `timetable.ts`/`tests.ts`/`moduleUpdates.ts`)
 rather than the brief's suggested `module` name — per CLAUDE.md's own instruction to
