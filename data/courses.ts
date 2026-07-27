@@ -77,7 +77,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "Lecture Mon 11:00–11:45 (Period 4), JD LT2. Plus one 2-hour practical session per week (slot tbc).",
+      "Lecture Tue 12:00–12:45 (Period 5), JD LT2 — confirmed via Amathuba group sign-up. Plus one 2-hour practical session per week (slot tbc).",
     assessmentWeights: [
       { label: "Practical average", weight: 0.1 },
       { label: "Theory test average", weight: 0.15 },
@@ -103,7 +103,7 @@ export const courses: Course[] = [
     },
     contacts: [],
     lectureInfo:
-      "Mon, some Wed, Fri, 12:00–13:00, M320. Tutorial/workshop (compulsory): Thu 14:00–16:00, venue TBC. None in week 1.",
+      "Tue, some Wed, Fri, 12:00–12:45, M320. First lecture Tue 28 Jul. Tutorial/workshop (compulsory): Thu 14:00–15:00, venue TBC — confirmed via Amathuba group sign-up, changeable until Wed 29 Jul 23:00. None in week 1; first tutorial Thu 6 Aug.",
     assessmentWeights: [
       { label: "Test 1 (of class record)", weight: 0.5 },
       { label: "Test 2 (of class record)", weight: 0.5 },
@@ -134,7 +134,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "Period 4, 11:00–11:45, M320, Assoc Prof Berdysheva. Mon + Thu every week, plus some Wednesdays. Tutorial (compulsory): Fri 14:00–14:45, MCB Sem A.",
+      "Period 4, 11:00–11:45, M320, Assoc Prof Berdysheva. Mon + Thu every week, plus some Wednesdays. Tutorial (compulsory): Thu 15:00–16:00, Bio LT — confirmed via Amathuba group sign-up.",
     assessmentWeights: [
       { label: "Test 1 (of class record)", weight: 0.475 },
       { label: "Test 2 (of class record)", weight: 0.475 },

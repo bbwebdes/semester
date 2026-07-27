@@ -1,7 +1,7 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-26 — final QA pass complete; real timetable clash found (see Blockers)
+> Last updated: 2026-07-27 — ingested Dr Janelidze-Gray's MAM2013S welcome email (see below)
 
 ## Current state (one paragraph)
 
@@ -49,6 +49,35 @@ focus, and `prefers-reduced-motion` re-verified across all pages including the t
 react.bits-inspired components (Tilted Card's tilt, Scroll Stack's sticky stack). The one
 remaining build-order item, first deploy to Vercel, needs the owner's own account
 authorization in a browser and cannot be done unilaterally — flagged below, not attempted.
+
+**2026-07-27 ingestion — MAM2013S welcome email + Groups screenshot:** Dr Janelidze-Gray
+("Dr Gray") sent a welcome email confirming lecture logistics and describing tutorial
+sign-up as open until Wed 29 Jul, 11pm — read alone this looked like it contradicted the
+2026-07-26 decision log entry treating the tutorial slot as already confirmed (Thu
+14:00–16:00) from an earlier Amathuba screenshot. Found a second, newer screenshot
+(`course-docs/MAM2013S updated tutorial time.png`, untracked, owner had dropped it in without
+mentioning it in chat) showing the actual Amathuba Groups page: already signed up for
+Thursday 14:00–15:00 (48/60 members), editable until the same 29 Jul deadline. That resolves
+it — the tutorial *is* real and confirmed (not `tbc`), just a 1-hour slot, not the 2-hour
+"2–4pm" block the welcome email describes generically. Kept both facts on record rather than
+picking one silently: timetable/course-info show the confirmed 14:00–15:00 slot, and a
+`moduleUpdates` reminder notes the email/Groups-page time discrepancy explicitly. Also
+updated: lecture day corrected Mon→Tue (Wed/Fri unchanged) and lecture end time 13:00→12:45,
+both real corrections from the convenor's own email. `courses.ts`, `timetable.ts`,
+`moduleUpdates.ts` updated; build clean.
+
+While in `course-docs` for the above, found a second untracked screenshot sitting alongside
+it: `MAM2014S updated tutorial time.png`. Checked it even though this task was scoped to
+MAM2013S, since it was clearly dropped in the same way — good thing, because it exposed a
+real error: MAM2014S's tutorial had been recorded as **Fri 14:00–14:45, MCB Sem A** since
+2026-07-26, but the actual Amathuba Groups page shows a **Thursday 15:00–16:00, Bio LT**
+group already joined (21/30) — wrong day, wrong time, wrong venue, not just an unconfirmed
+placeholder. The course outline confirms Thu/Fri tutorials run at 2pm and 3pm as 1-hour
+slots, consistent with 15:00–16:00 for the "3pm" group. Corrected in `timetable.ts` and
+`courses.ts`, with a `moduleUpdates` reminder explaining the correction. No new session
+clash introduced (Thu 15:00 is otherwise free in the timetable). Re-checking `course-docs`
+for untracked files even on a narrowly-scoped request is worth doing — stale "confirmed"
+data is worse than `tbc` data because nothing on screen flags it as needing a second look.
 
 ## Section tracker
 
@@ -372,18 +401,50 @@ reintroducing the step-8 CLS issue as flag count grows.
 Playwright sweep (zero console errors), and a re-run Lighthouse check on the two changed
 pages (home, timetable) — both still 100/100/100/100, CLS 0.004–0.006, confirming the new
 dashboard clash flag didn't reintroduce the layout-shift bug fixed earlier in step 8.
+(2026-07-27) — MAM2013S welcome email ingested (owner pasted the email text directly rather
+than dropping a file in `/inbox`; treated as equivalent per the ingestion workflow's intent).
+Lecture day corrected Mon→Tue, end time 13:00→12:45 (M320, Wed/Fri unchanged) — first lecture
+Tue 28 Jul. Initially reverted the tutorial to `tbc: true` reading the email in isolation
+(it describes sign-up as still open), but then noticed an untracked screenshot already sitting
+in `course-docs` (`MAM2013S updated tutorial time.png`) showing the real Amathuba Groups page:
+already signed up for Thu 14:00–15:00 (48/60), editable until the same 29 Jul deadline.
+Corrected course of action mid-task — kept the session confirmed (not `tbc`) at the real
+14:00–15:00 slot, and logged the 1-hour-vs-2-hour discrepancy between the email's generic
+description and the actual group slot as a `moduleUpdates` reminder rather than silently
+trusting either source alone. `npm run build` clean; spot-checked `/timetable` and
+`/modules/MAM2013S` against a production server.
+(2026-07-27) — MAM2014S's tutorial was wrong, not just unconfirmed: a fresh Amathuba Groups
+screenshot (found while processing an unrelated MAM2013S screenshot in the same folder) shows
+the real joined group is Thursday 15:00–16:00, Bio LT (21/30) — the data had carried Fri
+14:00–14:45, MCB Sem A since 2026-07-26. Corrected both `timetable.ts` and `courses.ts`,
+logged via `moduleUpdates`. Distinct from the usual `tbc` pattern: this was *marked* confirmed
+while actually being stale, which is a worse failure mode since nothing on screen prompts a
+recheck — worth remembering to spot-check "confirmed" slots against Amathuba occasionally
+rather than treating a `tbc:false` entry as permanently settled.
+(2026-07-27) — Same pattern a third time: `CSC1016S updated lecture time.png` (also untracked,
+also found while sweeping `course-docs` rather than requested directly) showed the real
+confirmed lecture group is Tue 12:00 (Period 5, JD LT2, 59/150) — not the Mon 11:00 entry the
+data had carried since 2026-07-26. Corrected `timetable.ts`/`courses.ts`. This move happens to
+resolve the long-standing MAM2014S/CSC1016S Monday clash (flagged since 2026-07-26) but opens
+a new one against MAM2013S's just-confirmed Tue 12:00 lecture — verified live that
+`/timetable`'s clash banner picks it up automatically ("2 sessions overlap another session"
+listing both courses), so no code change was needed, only data. See Blockers for the updated
+real-world conflict and the very-near sign-up expiry (28 Jul, 10am) worth double-checking.
 
 ## Blockers / needs owner input
 
 **⚠ Real timetable clash — needs a real-world decision, not a data fix:**
-- **MAM2014S (Mon 11:00, Period 4) directly clashes with CSC1016S (Mon 11:00)**, both
-  11:00–11:45. Checked Period 5 as an alternative — it clashes with MAM2013S's Mon/Wed/Fri
-  12:00 lecture instead, so there's no clash-free period choice available; this is a genuine
-  three-course conflict in your timetable, not something the dashboard can resolve for you.
-  It's now surfaced both on `/timetable` and on the Dashboard's Urgent Flags tile ("CSC1016S
-  & MAM2014S clash every Mon"). Worth raising with one of the departments (e.g. ask about
-  catching a recording, or whether the CSC lecture group has flexibility) before it becomes
-  a habit of missing one or the other.
+- **UPDATE (2026-07-27): the previously-flagged Mon 11:00 MAM2014S/CSC1016S clash is now
+  moot** — a fresh Amathuba Groups screenshot showed CSC1016S's real confirmed lecture group
+  is actually Tue 12:00 (JD LT2, Period 5, 59/150), not the Mon 11:00 entry the data had
+  carried since 2026-07-26. That resolves the old Monday conflict, but opens a new one:
+  **CSC1016S (Tue 12:00, Period 5) directly clashes with MAM2013S (Tue 12:00, confirmed via
+  this session's welcome-email ingestion)**, both 12:00–12:45. This is a genuine two-course
+  conflict, not something the dashboard can resolve — it's surfaced on `/timetable`'s clash
+  banner (verified live against a production build). Worth raising with one of the
+  departments before it becomes a habit of missing one or the other. Also worth noting: the
+  CSC1016S sign-up's expiry showed as **28 July 2026, 10:00 AM** (i.e. tomorrow) — confirm on
+  Amathuba that Tuesday is actually locked in before relying on this.
 
 **The one thing left to reach full build-order completion:**
 - **Deploy to Vercel** — every other part of step 8 (and steps 1–7) is done. This is the
@@ -413,8 +474,12 @@ dashboard clash flag didn't reintroduce the layout-shift bug fixed earlier in st
   for it yet (unlike the lecture, which is confirmed Mon 11:00). Seeded `tbc:true`.
 - **STA2005S Practical Test date, Assignment 1 date** — not yet announced anywhere in the
   outline (not even a provisional week); seeded with `tbc:true` and no `date`.
-- **MAM2013S tutorial venue** — day/time confirmed (Thu 14:00–16:00 via Amathuba group
-  signup) but the venue isn't shown in that group listing; seeded `venue: "TBC"`.
+- **MAM2013S tutorial venue** — day/time confirmed (Thu 14:00–15:00, via a 2026-07-27
+  Amathuba Groups screenshot showing you're already signed up, 48/60) but the venue isn't
+  shown in that listing; seeded `venue: "TBC"`. Also: the welcome email describes tutorials
+  generically as 2-hour blocks (2–4pm) while your actual confirmed slot is 1 hour (2–3pm) —
+  not treated as an error since the Groups page is the more direct source, but worth a
+  glance next time you're on Amathuba given sign-up stays editable until Wed 29 Jul 11pm.
 - **App name** — "Semester" is a placeholder.
 - **Auto-generated CSC1016S study plan** — built proactively during step 7 to prove the
   Scroll Stack/check-off feature works (see decisions log), not requested via the explicit
@@ -432,14 +497,22 @@ dashboard clash flag didn't reintroduce the layout-shift bug fixed earlier in st
 - `Assessment.date` is optional (with a `tbc` flag) rather than the required field CLAUDE.md's
   data-model section describes, so wholly-unscheduled real assessments can still be seeded
   now rather than invented or omitted — see decisions log.
-- STA2005S R prac (Tue 14:00–15:00, Scilab D), STA2005S tutorial (Wed 14:00–15:00, LS2B),
-  and CSC1016S lecture (Mon 11:00, JD LT2) are now confirmed real slots, not placeholders —
-  owner-supplied Amathuba screenshots, see decisions log.
+- STA2005S R prac (Tue 14:00–15:00, Scilab D) and STA2005S tutorial (Wed 14:00–15:00, LS2B)
+  are confirmed real slots, not placeholders — owner-supplied Amathuba screenshots, see
+  decisions log.
+- CSC1016S lecture corrected (2026-07-27) to Tue 12:00–12:45, Period 5, JD LT2, per the real
+  Amathuba Groups sign-up — supersedes the earlier Mon 11:00 entry; see decisions log and
+  Blockers for the new clash this revealed.
 - MAM2014S tracked as a 4th course (`ra` teal accent) — supersedes the earlier assumption
   that only three courses existed; see decisions log.
 - MAM2014S lecture slot confirmed as Period 4 (Mon/Thu/some-Wed, 11:00–11:45, M320,
   Berdysheva) — no longer `tbc`. This is what revealed the real Mon 11:00 clash with
   CSC1016S; see Blockers.
+- MAM2014S tutorial corrected (2026-07-27) to Thu 15:00–16:00, Bio LT, per the real
+  Amathuba Groups sign-up — supersedes the earlier Fri 14:00–14:45, MCB Sem A entry, which
+  did not match any real joined group; see decisions log.
+- MAM2013S tutorial confirmed (2026-07-27) as Thu 14:00–15:00 per the real Amathuba Groups
+  sign-up, still changeable until Wed 29 Jul 11pm; venue not yet shown, seeded `venue: "TBC"`.
 
 ## Next up
 
