@@ -1,10 +1,10 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-29 — MAM2012S promoted from concepts-only to a full 5th tracked
-> course (`courses.ts`/`timetable.ts`/`tests.ts`/`moduleUpdates.ts`, new `de` lime accent);
-> STA2005S got its R-computing announcement plus 9 new concept briefings from a newly
-> found full "Applied Linear Regression" notes document. See "Current state" below.
+> Last updated: 2026-07-29 (later same day) — CSC1016S switched to Mon 12:00–13:00,
+> resolving the real Tue clash with MAM2012S; added a date-aware "this week's alternating
+> slot" checker to `/timetable` so the MAM2012S/MAM2014S Wed false-positive clash now has
+> a real per-week answer instead of just an explanatory note. See "Current state" below.
 
 ## Current state (one paragraph)
 
@@ -174,6 +174,46 @@ row without overflow (no repeat of the MAM2014S-era clipping bug), that `/tests`
 MAM2012S's two tests correctly by countdown, and that the 9 new STA2005S cards expand/
 collapse correctly on `/concepts` with the right difficulty badges.
 
+**2026-07-29 (later same day) — CSC1016S slot switch + weekly MAM alternation
+checker:** The owner asked to re-check the three MAM courses' course info sheets for
+their irregular "some Wednesdays" scheduling (given MAM2012S and MAM2014S share the
+same Period-4/M320 slot on alternating real dates), and to switch CSC1016S to
+Mon 12:00–13:00 to resolve the real Tue clash with MAM2012S flagged earlier today.
+
+Re-checked all three MAM courses' source documents directly rather than trusting the
+existing data: MAM2012S's specific Wednesdays (5/26 Aug, 16 Sep, 7/21 Oct) and
+MAM2014S's (29 Jul, 12/19 Aug, 2/23/30 Sep, 14 Oct) both matched what was already in
+`timetable.ts` exactly — confirmed against the raw "Course Information.html" source for
+MAM2014S specifically. MAM2013S's course info sheet and its full `MAM2013S NOTES.pdf`
+(math content only) were both checked for a similar specific-date list — neither
+publishes one, and MAM2013S's own irregular Wednesday is a different time (Period 5,
+12:00–12:45) from the other two's shared Period 4 slot anyway, so it was never part of
+that room-swap and needed no data change — only a note confirming the check was done.
+
+CSC1016S moved from Tue 11:00–11:45 to **Mon 12:00–13:00**, JD LT2 (the owner's stated
+choice, specifically to get off MAM2012S's fixed Tuesday slot) — verified against the
+current timetable that Monday 12:00–13:00 has no other session and introduces no new
+clash. `timetable.ts`, `courses.ts` and `moduleUpdates.ts` updated; the resolved-clash
+note removed from MAM2012S's Tue session in `timetable.ts` since it's no longer accurate.
+
+Built the requested "weekly checker": `Session.dates?: string[]` added to
+`data/types.ts` for sessions that only happen on specific real calendar dates (currently
+just MAM2012S's and MAM2014S's Wed lectures), populated with both courses' real date
+lists. `lib/timetable.ts` gained `dateOfDayThisWeek()` and `findDatedSessionSlots()`,
+which group same-day/time/venue dated sessions and resolve which one (if any) is real
+for the current week by matching against the actual calendar date. `/timetable` now
+shows a "This week's alternating slot" card above the clash banner — verified live
+(system date 29 Jul 2026, itself a real MAM2014S date) that it correctly reads
+"Wed 29 Jul: MAM2014S lecture, M320". This doesn't remove the underlying false-positive
+clash banner (the clash detector itself is still deliberately not date-aware, per the
+2026-07-29 decision earlier today), but now sits right above it with the real per-week
+answer, which is what was actually being asked for.
+
+Build + lint clean; production build Playwright-checked live on `/timetable` and `/` —
+confirmed the CSC1016S/MAM2012S clash entry is gone from the dashboard's Urgent Flags
+tile (only the Wed false-positive remains), and the new checker card renders correctly
+above the clash banner with the right course, date and venue.
+
 ## Section tracker
 
 | Section | Status | Notes |
@@ -185,7 +225,7 @@ collapse correctly on `/concepts` with the right difficulty badges.
 | Concept Briefing — CSC1016S | done | No notes exist in `course-docs` yet (per instruction, not fabricated) — nothing to build. Confirmed the `/concepts` UI already renders an honest "No notes ingested for this module yet" empty state under its real title ("Computer Science", from `courses.ts`), verified live via Playwright; will populate automatically once notes are added and a data file is created. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
-| Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. |
+| Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. 2026-07-29: added a "this week's alternating slot" checker (`findDatedSessionSlots()`) that resolves which of MAM2012S/MAM2014S's alternating Wed lectures is real for the current week, verified live. |
 | Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
 | Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
 | Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
@@ -659,6 +699,20 @@ count of `id:` entries in `data/concepts/mam2012s.ts` gives 17 — the true coun
 miscounted when originally logged, not a new discrepancy. Left the original 2026-07-27
 entry's prose otherwise untouched (append-only log) and corrected the section tracker row
 directly, per the "trust current file state over a memory/log snapshot" principle.
+(2026-07-29, later same day) — CSC1016S moved to Mon 12:00–13:00 specifically to
+resolve the real MAM2012S Tue clash — MAM2012S's slot couldn't move (fixed by the
+department), so CSC1016S had to. Checked Monday 12:00–13:00 against every other
+session in `timetable.ts` before committing to it — no other course occupies that
+slot, so no new clash was introduced.
+(2026-07-29, later same day) — Added `Session.dates?: string[]` to the core data model
+rather than inventing a parallel data structure, since it's a small, optional addition
+to an existing type that only irregular sessions need to populate — every other session
+and every existing consumer of `Session` is unaffected. Chose to resolve the alternation
+client-side in `/timetable` (via `findDatedSessionSlots()`) rather than trying to make
+the existing `findClashes()` date-aware — that function is also used for the (correctly)
+date-agnostic weekly grid rendering and the general clash banner, and making it
+date-aware would be a much bigger change for a need that's really just "tell me which
+one is real this week," which the new dedicated helper answers directly.
 
 ## Blockers / needs owner input
 
@@ -681,15 +735,17 @@ directly, per the "trust current file state over a memory/log snapshot" principl
   you're ready — just say so, or do it yourself via vercel.com → New Project → import the
   repo (no config needed, it's a standard Next.js app).
 
-**New real timetable clash (2026-07-29, needs an owner decision):**
-- **MAM2012S Tue 11:00–11:45 (M320) directly clashes with CSC1016S's current Tue
-  11:00–11:45 lecture (JD LT2)**, every week — both are real, non-`tbc` slots, so this
-  isn't a data error. CSC1016S's Tuesday slot is itself still only the owner's *intended*
-  pick pending Amathuba re-confirmation (see the item above), so there may be room to
-  resolve this by choosing a different CSC1016S session — but MAM2012S's lecture time is
-  fixed by the department (Tue/Fri/some-Wed, Period 4, per the course info sheet), so it
-  can't move. Surfaces correctly on `/timetable` and the dashboard's Urgent Flags tile;
-  not silently resolved.
+**Resolved later the same day (2026-07-29):**
+- The MAM2012S/CSC1016S Tue 11:00–11:45 clash (flagged earlier today) is resolved:
+  CSC1016S switched to Mon 12:00–13:00, JD LT2 — the owner's stated choice, still
+  pending Amathuba re-confirmation (same caveat as every CSC1016S slot change this
+  project). Verified no new clash was introduced on Monday.
+- A false-positive Wed clash between MAM2012S and MAM2014S remains on `/timetable`'s
+  clash banner (their shared Period-4/M320 slot's specific real dates never actually
+  coincide — see decisions log) — this is a known, accepted limitation of the
+  (deliberately not date-aware) clash detector, not something to "fix" by suppressing
+  the banner. `/timetable` now also shows a "This week's alternating slot" card that
+  resolves it with the real per-week answer.
 
 **Open owner questions:**
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.

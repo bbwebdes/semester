@@ -61,14 +61,14 @@ note), flag it for owner confirmation — do not silently pick one.**
 - Dates: Test 1 — Mon 31 Aug, 18:00 (venue TBC). Test 2 — Thu 15 Oct, 18:00 (venue TBC).
   Both weekdays cross-checked against the 2026 calendar and match the source, so no
   `confirm` flag needed.
-- **Real timetable clash:** MAM2012S's Tue 11:00–11:45 lecture directly overlaps
-  CSC1016S's current Tue 11:00–11:45 lecture slot, every week — a genuine scheduling
-  conflict (not a data error), surfaced correctly by the existing clash detector.
 
 **CSC1016S — Computer Science** (accent: `csc`, green)
 - Convenor: Mr Aslam Safla (aslam@cs.uct.ac.za). Sick notes: sick-csc1016s@cs.uct.ac.za.
-- Lectures: one face-to-face lecture/week, Mon–Wed, JD LT2 (Period 4 or 5 — owner picks
-  one). Plus one 2-hr practical session/week (slot `tbc`).
+- Lectures: one face-to-face lecture/week on Amathuba's blended-learning schedule, plus
+  daily Mon–Thu video lectures. Current pick (2026-07-29, owner's stated intent, still
+  pending Amathuba re-confirmation): Mon 12:00–13:00, JD LT2 — chosen specifically to
+  avoid MAM2012S's fixed Tue 11:00–11:45 lecture. Plus one 2-hr practical session/week
+  (slot `tbc`).
 - Assessments: Final = 0.10·prac avg + 0.15·theory-test avg + 0.15·prac-test avg +
   0.60·exam. DP: prac-test avg ≥50%, and (3/5·prac + 2/5·prac-test) ≥45%.
 - Dates: Theory Test 1 — 26 Aug, 18:00. Practical Test 1 — weeks 5–6. Theory Test 2 —
@@ -217,7 +217,11 @@ colour-coded by module accent. Each block shows code · kind · venue · time. R
 lectures and owner-chosen tut/prac slots; `tbc` slots render as a muted "set your slot"
 placeholder. Detect and flag overlapping sessions. "Now / Next" awareness: highlight the
 current and next session from the live clock. Responsive: grid at ≥768px, a single-day
-agenda list on mobile with a day switcher.
+agenda list on mobile with a day switcher. For sessions that only happen on specific real
+dates (`Session.dates`, e.g. MAM2012S/MAM2014S's alternating "some Wednesdays" Period-4
+slot), a "this week's alternating slot" card resolves which one is real for the current
+week from the actual calendar date — separate from the (deliberately date-agnostic)
+weekly clash detector, which still flags such pairs every week regardless.
 
 **2. Module info** — `/modules` is a grid of Tilted Cards (one per module, accent-bordered)
 → `/modules/[code]` detail: convenor + contacts, venues, assessment weights, DP rules, and

@@ -45,6 +45,11 @@ export type Session = {
   venue: string;
   tbc?: boolean;
   note?: string;
+  // For irregular ("some Wednesdays") sessions only: the real calendar dates
+  // (ISO "YYYY-MM-DD") this session actually happens on, so week-specific UI
+  // (e.g. "which MAM lecture is on this week") can be date-aware even though
+  // the weekly grid itself and its clash detector are not.
+  dates?: string[];
 };
 
 export type AssessmentKind = "test" | "practest" | "assignment" | "exam";

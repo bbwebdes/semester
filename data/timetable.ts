@@ -63,11 +63,11 @@ export const timetable: Session[] = [
   {
     courseCode: "CSC1016S",
     kind: "lecture",
-    day: "Tue",
-    start: "11:00",
-    end: "11:45",
+    day: "Mon",
+    start: "12:00",
+    end: "13:00",
     venue: "JD LT2",
-    note: "Owner's intended pick (not yet re-confirmed on Amathuba — planning to raise with the convenor). Ignore PeopleSoft/SEAT timetable per the convenor's announcement; whichever Amathuba group you join governs. Group sign-up runs until Tue 28 Jul 10:00am, 6 sessions on offer (11am/12pm, Mon–Wed).",
+    note: "Owner's intended pick as of 2026-07-29, chosen specifically to resolve the Tue 11:00 clash with MAM2012S — not yet re-confirmed on Amathuba. Ignore PeopleSoft/SEAT timetable per the convenor's announcement; whichever Amathuba group you join governs. 6 sessions were originally on offer (11am/12pm, Mon–Wed); re-verify this Monday slot is still open when you pick it on Amathuba.",
   },
   {
     courseCode: "CSC1016S",
@@ -97,7 +97,7 @@ export const timetable: Session[] = [
     start: "12:00",
     end: "12:45",
     venue: "M320",
-    note: "Not every week — which Wednesdays are announced in class.",
+    note: "Not every week — which Wednesdays are announced in class. Checked (2026-07-29) against the full course info sheet and notes for a specific date list, like MAM2012S/MAM2014S have — none has been published for this course yet. It's also a different time (Period 5, 12:00–12:45) from MAM2012S/MAM2014S's shared Period-4 Wed rotation, so it isn't part of that particular room-swap and doesn't clash with it regardless.",
   },
   {
     courseCode: "MAM2013S",
@@ -143,7 +143,16 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot. Shares this Wed Period-4/M320 slot with MAM2012S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware.",
+    dates: [
+      "2026-07-29",
+      "2026-08-12",
+      "2026-08-19",
+      "2026-09-02",
+      "2026-09-23",
+      "2026-09-30",
+      "2026-10-14",
+    ],
+    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot. Shares this Wed Period-4/M320 slot with MAM2012S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware. See the Timetable page's \"This Wednesday\" checker for which course it actually is in any given week.",
   },
   {
     courseCode: "MAM2014S",
@@ -163,7 +172,7 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    note: "Period 4. Clashes every week with CSC1016S's current Tue 11:00–11:45 lecture slot (JD LT2) — a real conflict, not a data error; see the timetable clash banner and PROJECT_STATUS.md Blockers.",
+    note: "Period 4.",
   },
   {
     courseCode: "MAM2012S",
@@ -181,7 +190,8 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    note: "Not every week — only 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Shares this Wed Period-4/M320 slot with MAM2014S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware.",
+    dates: ["2026-08-05", "2026-08-26", "2026-09-16", "2026-10-07", "2026-10-21"],
+    note: "Not every week — only 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Shares this Wed Period-4/M320 slot with MAM2014S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware. See the Timetable page's \"This Wednesday\" checker for which course it actually is in any given week.",
   },
   {
     courseCode: "MAM2012S",

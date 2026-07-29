@@ -35,6 +35,14 @@ export const moduleUpdates: Update[] = [
   },
   {
     courseCode: "CSC1016S",
+    date: "2026-07-29",
+    kind: "reminder",
+    title: "Lecture slot changed again: Mon 12:00–13:00",
+    body: "Supersedes the Tue 11:00 plan above — switching to Mon 12:00–13:00, JD LT2, specifically to resolve the real weekly clash with MAM2012S's Tue 11:00–11:45 lecture (MAM2012S's slot is fixed by the department and can't move). This is your stated intent, not yet re-confirmed on Amathuba — check that the Monday group is actually open when you pick it.",
+    source: "Owner decision, 29 Jul 2026",
+  },
+  {
+    courseCode: "CSC1016S",
     date: "2026-07-27",
     kind: "announcement",
     title: "Blended learning format — video lectures + one face-to-face session",

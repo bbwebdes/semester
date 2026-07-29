@@ -1,10 +1,12 @@
 import {
+  addDays,
   addMinutes,
   areIntervalsOverlapping,
   differenceInMinutes,
   format,
   isWithinInterval,
   parse,
+  startOfWeek,
 } from "date-fns";
 import type { Session, Weekday } from "@/data/types";
 
@@ -153,3 +155,51 @@ export const kindLabel: Record<Session["kind"], string> = {
   tutorial: "Tutorial",
   prac: "Prac",
 };
+
+/** The real calendar date (ISO "YYYY-MM-DD") of `day` in the same week as `now`. */
+export function dateOfDayThisWeek(day: Weekday, now: Date): string {
+  const monday = startOfWeek(now, { weekStartsOn: 1 });
+  return format(addDays(monday, weekOrder.indexOf(day)), "yyyy-MM-dd");
+}
+
+export type DatedSessionSlot = {
+  day: Weekday;
+  start: string;
+  end: string;
+  venue: string;
+  /** This week's real date for `day`. */
+  weekDate: string;
+  /** The session whose `dates` list includes `weekDate`, if any. */
+  active: Session | null;
+  /** Every session sharing this day/time/venue slot across different real dates. */
+  candidates: Session[];
+};
+
+/**
+ * Groups sessions that only happen on specific real dates (the `dates` field —
+ * e.g. MAM2012S/MAM2014S's alternating "some Wednesdays" Period-4/M320 slot) by
+ * day+start+end+venue, and resolves which one (if any) is the real session for
+ * the current week. Lets the UI answer "which course's lecture is this actually,
+ * this week?" instead of just flagging a same-slot clash every week regardless
+ * of the real calendar.
+ */
+export function findDatedSessionSlots(
+  sessions: Session[],
+  now: Date,
+): DatedSessionSlot[] {
+  const dated = sessions.filter((s) => s.dates && s.dates.length > 0);
+  const groups = new Map<string, Session[]>();
+  dated.forEach((s) => {
+    const key = `${s.day}|${s.start}|${s.end}|${s.venue}`;
+    const list = groups.get(key) ?? [];
+    list.push(s);
+    groups.set(key, list);
+  });
+
+  return Array.from(groups.values()).map((candidates) => {
+    const { day, start, end, venue } = candidates[0];
+    const weekDate = dateOfDayThisWeek(day, now);
+    const active = candidates.find((s) => s.dates!.includes(weekDate)) ?? null;
+    return { day, start, end, venue, weekDate, active, candidates };
+  });
+}

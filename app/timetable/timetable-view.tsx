@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { format, parseISO } from "date-fns";
 import type { Course, Session, Weekday } from "@/data/types";
 import { accentClasses } from "@/lib/accent";
 import {
   findClashes,
+  findDatedSessionSlots,
   findNextSession,
   formatTimeRange,
   getTodayLabel,
@@ -187,6 +189,11 @@ export function TimetableView({
     [clean, now],
   );
 
+  const datedSlots = useMemo(
+    () => (now ? findDatedSessionSlots(sessions, now) : []),
+    [sessions, now],
+  );
+
   const rows = useMemo(() => buildTableRows(clean), [clean]);
 
   const agendaSessions = useMemo(
@@ -226,6 +233,38 @@ export function TimetableView({
                 {formatTimeRange(session.start, session.end)} · {session.venue}
               </li>
             ))}
+          </ul>
+        </div>
+      )}
+
+      {datedSlots.length > 0 && (
+        <div className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4">
+          <h2 className="text-sm font-semibold text-muted">
+            This week&apos;s alternating slot
+          </h2>
+          <ul className="flex flex-col gap-1 text-sm">
+            {datedSlots.map((slot, i) => {
+              const dateLabel = format(parseISO(slot.weekDate), "EEE d MMM");
+              const accent = slot.active
+                ? accentClasses[
+                    courseByCode.get(slot.active.courseCode)?.accent ?? "sta"
+                  ]
+                : null;
+              return (
+                <li key={i} className="text-text">
+                  <span className="text-muted">{dateLabel}: </span>
+                  {slot.active ? (
+                    <span className={`font-semibold ${accent?.text ?? ""}`}>
+                      {slot.active.courseCode} lecture, {slot.venue}
+                    </span>
+                  ) : (
+                    <span className="text-muted">
+                      no lecture in this {slot.day} {formatTimeRange(slot.start, slot.end)} slot this week
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

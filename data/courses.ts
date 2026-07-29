@@ -77,7 +77,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "Blended learning — daily video lectures Mon–Thu on Amathuba, plus one face-to-face session/week: Tue 11:00–11:45 (owner's intended pick; Amathuba group sign-up governs, not PeopleSoft/SEAT), JD LT2. Plus weekly practicals from Mon 3 Aug (slot tbc).",
+      "Blended learning — daily video lectures Mon–Thu on Amathuba, plus one face-to-face session/week: Mon 12:00–13:00 (owner's intended pick, chosen to resolve a clash with MAM2012S; Amathuba group sign-up governs, not PeopleSoft/SEAT), JD LT2. Plus weekly practicals from Mon 3 Aug (slot tbc).",
     assessmentWeights: [
       { label: "Practical average", weight: 0.1 },
       { label: "Theory test average", weight: 0.15 },
