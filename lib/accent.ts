@@ -28,4 +28,10 @@ export const accentClasses: Record<
     bg: "bg-ra/10",
     ring: "ring-ra",
   },
+  de: {
+    border: "border-de/70",
+    text: "text-de",
+    bg: "bg-de/10",
+    ring: "ring-de",
+  },
 };

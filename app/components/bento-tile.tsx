@@ -9,6 +9,7 @@ const glowRgb: Record<AccentToken | "neutral", string> = {
   csc: "61, 214, 140",
   mam: "192, 132, 252",
   ra: "45, 212, 191",
+  de: "163, 230, 53",
   neutral: "230, 234, 240",
 };
 

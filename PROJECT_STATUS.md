@@ -1,9 +1,10 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-27 — Concept Briefing feature complete: STA2005S, MAM2013S,
-> MAM2014S and MAM2012S concepts live in `/concepts`; CSC1016S renders its honest
-> empty state. Final cross-module self-QA passed; see "In progress" below.
+> Last updated: 2026-07-29 — MAM2012S promoted from concepts-only to a full 5th tracked
+> course (`courses.ts`/`timetable.ts`/`tests.ts`/`moduleUpdates.ts`, new `de` lime accent);
+> STA2005S got its R-computing announcement plus 9 new concept briefings from a newly
+> found full "Applied Linear Regression" notes document. See "Current state" below.
 
 ## Current state (one paragraph)
 
@@ -101,14 +102,86 @@ Assignment 1 — CLAUDE.md's CSC1016S weighting has no standalone "assignment" l
 is modelled as part of the practical average via `moduleUpdates`, consistent with the
 practical-test entries already there.
 
+**2026-07-29 — MAM2012S promoted to a full tracked course + STA2005S expansion:** The
+owner reorganized `/course-docs` into three new subfolders (`course-information/`,
+`times/`, `learning-documents/`) and dropped in three genuinely new files: a real
+MAM2012S course info sheet (`mam2012s-course-info.pdf`, lecturer Mr Thomas van Heerden),
+an Amathuba tutorial-slot screenshot (`MAM2012S - Tutorial Time.png`), and a fuller
+STA2005S reference document (`STA2005S Notes.pdf`, "Applied Linear Regression — Notes
+and Theorems", 2019). Verified via `md5sum` against the git-tracked originals that every
+other reorganized file (MAM2013S/MAM2014S notes, the two raw "Course Information.html"
+webpage saves, the CSC1016S notes PDF, all the timetable-slot PNGs) is byte-identical
+content just relocated — nothing was silently changed in the move, so nothing needed
+re-ingesting for those.
+
+MAM2012S (2DE, Differential Equations) was previously modelled only as a
+`ConceptModuleCode` (concept briefings existed, but it wasn't a real dashboard course)
+because it was pending registration confirmation. The new course info sheet resolves
+that: added as a 5th tracked course everywhere — `CourseCode`/`AccentToken` unions
+extended, a new `de` lime accent (`#A3E635`, chosen to be clearly distinct from the
+existing blue/green/violet/teal quartet; manually contrast-checked at ~12.8:1 on `base`
+and ~11.7:1 on `surface`, comfortably clearing the 4.5:1 floor), `courses.ts` (Thomas van
+Heerden, Class Record = 10% tutorial tests + 45% T1 + 45% T2, DP ≥35%),
+`timetable.ts` (Tue/Fri/some-Wed lectures 11:00–11:45 M320, Fri 14:00–15:00 tutorial at
+Hahn 4G confirmed via Amathuba), `tests.ts` (Test 1 Mon 31 Aug 18:00, Test 2 Thu 15 Oct
+18:00 — both weekdays cross-checked against the 2026 calendar and match the source),
+`moduleUpdates.ts`, and `data/concepts/modules.ts` (simplified to just reuse each
+course's real accent now that every note-set module is tracked, removing the manual
+neutral-styled MAM2012S entry). `ConceptModuleCode` was simplified from
+`CourseCode | "MAM2012S"` to a plain alias of `CourseCode`, since MAM2012S is now already
+part of that union. `bento-tile.tsx`'s `glowRgb` map needed the new `de` key too (caught
+by the type checker, not silently missed).
+
+Two real timetable clashes surfaced from adding MAM2012S's real slots, both left visible
+via the existing (unmodified) clash detector rather than hidden:
+- **Genuine, permanent clash:** MAM2012S's Tue 11:00–11:45 lecture directly overlaps
+  CSC1016S's current Tue 11:00–11:45 lecture — a real scheduling conflict, not a data bug.
+- **False positive, by design limitation:** MAM2012S and MAM2014S both use the same
+  irregular "some Wednesdays" Period 4/M320 slot, but their specific real Wednesdays never
+  actually coincide (checked all 12 dates across both courses — completely disjoint,
+  strongly suggesting the department deliberately alternates them to share the room). The
+  timetable's clash detector is weekday-based, not date-aware, so it still flags this pair
+  every Wednesday even though the real calendar never has them clash. Documented with an
+  explanatory `note` on both sessions rather than a code change, since making clash
+  detection date-aware for two irregular sessions would be a disproportionate architecture
+  change for this one pair — flagged as a known limitation, not silently worked around.
+
+STA2005S: transcribed the owner-supplied "Introduction to R" announcement text (R is a
+major, ongoing part of the course from week 1 onward, not a side skill) into a new
+`moduleUpdates.ts` announcement entry, and added CLAUDE.md's own R-sessions bullet to
+say so explicitly. Separately, the newly found `STA2005S Notes.pdf` turned out to be a
+full "Applied Linear Regression" reference (dated 2019, likely a reused supplementary
+resource rather than this year's dated lecture deck) covering the general linear model
+end to end — matched topic-for-topic against `tests.ts`'s own `sta-test-1` scope, so used
+as a real source. Added 9 new concept briefings (general linear model & MLE, confidence/
+prediction intervals, hypothesis tests & the Wald test, the ANOVA table & R², residual
+diagnostics, outliers & influence, variable selection, the Gauss-Markov theorem, and
+transformations & indicator variables), bringing STA2005S to 13 concepts total. Did not
+fabricate cards for bootstrapping or PCA (also named in the Test 1 scope) since this
+source doesn't cover them, nor for any Test 2 design-of-experiments topic. In the same
+pass, corrected a stale figure: the MAM2012S concept-briefing count recorded elsewhere in
+this file as "19" is actually 17 (verified by counting `id:` entries in
+`data/concepts/mam2012s.ts` directly) — the cover page of `2DE NOTES.pdf` names topics
+(vector geometry, standalone Taylor series/complex numbers) not actually present as
+separate chapters, which is exactly the discrepancy the 2026-07-27 decision log entry
+already flagged; the "19" was simply miscounted at the time, not a new finding.
+
+Build + lint clean; production build (`next build`+`next start`) Playwright-swept across
+`/`, `/timetable`, `/modules`, `/modules/MAM2012S`, `/tests`, `/concepts` at 1440px with
+zero console/page errors; confirmed live that both new clashes render correctly on
+`/timetable` and `/`'s Urgent Flags tile, that `/modules` grid wraps MAM2012S onto a new
+row without overflow (no repeat of the MAM2014S-era clipping bug), that `/tests` sorts
+MAM2012S's two tests correctly by countdown, and that the 9 new STA2005S cards expand/
+collapse correctly on `/concepts` with the right difficulty badges.
+
 ## Section tracker
 
 | Section | Status | Notes |
 |---|---|---|
-| Concept Briefing — STA2005S | done | `/concepts` built end to end: types, `/data/concepts/{sta2005s,modules,index}.ts`, `ConceptCard`/`ConceptsView` UI (search + difficulty/tag filters, expand-in-place cards, grouped by module then source deck), nav link. 4 concepts transcribed from the only notes released so far (Week 1: course intro, MVN distribution deck, its Q&A) — intro to regression, the MVN distribution, linear transformations/partitions of MVN, quadratic forms & chi-square. Build/lint clean; Playwright screenshots 360/768/1440 + expanded-card state, zero console errors. |
+| Concept Briefing — STA2005S | done | `/concepts` built end to end: types, `/data/concepts/{sta2005s,modules,index}.ts`, `ConceptCard`/`ConceptsView` UI (search + difficulty/tag filters, expand-in-place cards, grouped by module then source deck), nav link. 13 concepts total: 4 from the Week 1 slide decks (course intro, MVN distribution, linear transformations/partitions of MVN, quadratic forms & chi-square) plus 9 added 2026-07-29 from the fuller `STA2005S Notes.pdf` reference document (general linear model & MLE, confidence/prediction intervals, hypothesis tests & the Wald test, ANOVA table & R², residual diagnostics, outliers & influence, variable selection, Gauss-Markov, transformations & indicator variables). Build/lint clean; Playwright screenshots 360/768/1440 + expanded-card state, zero console errors. |
 | Concept Briefing — MAM2013S | done | 12 concepts transcribed from the full `MAM2013S NOTES.pdf` (Introductory Algebra, 2IA): Ch1 Integers (induction, divisibility/gcd/Bézout, congruences/ℤₙ), Ch2 Permutations (cycles, parity/alternating group), Ch3 Groups (definition/Cayley tables, subgroups/centre, cyclic groups, homomorphisms/isomorphisms), Ch4 Lagrange's Theorem, Ch5 Factor groups (normal subgroups, First Isomorphism Theorem). Appendix A (sets/maps/equivalence relations) folded into the induction card's pre-lecture prereqs rather than given its own card, since the notes treat it as background review. Build/lint clean; Playwright screenshot 1440px, zero console errors. |
 | Concept Briefing — MAM2014S | done | 20 concepts transcribed from the full `MAM2014S NOTES.pdf` (Real Analysis, 2RA): Ch0 Preliminaries (sets/number systems), Ch1 The real numbers (induction/√2 irrationality, completeness axiom, consequences of completeness, cardinality), Ch2 Sequences and series (limits, Monotone Convergence Theorem, series basics, comparison/p-series, subsequences/Bolzano-Weierstrass, Cauchy sequences, absolute/conditional convergence, ratio/root tests, rearrangements), Ch3 Topology of ℝ, Ch4 Limits of functions/continuity/uniform continuity, Ch5 Derivatives & the MVT family, Ch6 Sequences/series of functions and power/Taylor series. Cardinality, uniform continuity, and rearrangements marked `stretch`; power series/Taylor series marked `hard` (with `tips`, since it's the most demanding topic in the course). Build/lint clean; Playwright screenshots 360/1440 + an expanded-card check, zero console errors. |
-| Concept Briefing — MAM2012S | done | 19 concepts transcribed from the full `2DE NOTES.pdf` (MAM2000W - 2DE: Differential Equations): Ch1 linear independence/Wronskian; Ch2 homogeneous/nonhomogeneous constant-coefficient ODEs, the annihilator method, variation of parameters, Cauchy-Euler equations; Ch3 diagonalisable systems, the matrix exponential, generalised eigenvectors, Jordan normal forms, complex eigenvalues in systems, nonhomogeneous systems; Ch4 the heat equation/separation of variables, orthogonality/Fourier coefficients, Fourier series & convergence, term-by-term differentiation/integration, the Fourier transform, and the Black-Scholes equation. Course itself is still pending registration confirmation (see Blockers) so it's modelled via `ConceptModuleCode` rather than the core `CourseCode` union — see decisions log. Generalised eigenvectors, Jordan normal form, term-by-term differentiation, the Fourier transform, and Black-Scholes marked `hard`/`stretch` with `tips` populated on the hardest ones. Build/lint clean; Playwright screenshots 360/768/1440 + an expanded hard-card check (Black-Scholes), zero console errors. |
+| Concept Briefing — MAM2012S | done | 17 concepts (corrected 2026-07-29 from a stale "19" figure — verified by direct count) transcribed from the full `2DE NOTES.pdf` (MAM2000W - 2DE: Differential Equations): Ch1 linear independence/Wronskian; Ch2 homogeneous/nonhomogeneous constant-coefficient ODEs, the annihilator method, variation of parameters, Cauchy-Euler equations; Ch3 diagonalisable systems, the matrix exponential, generalised eigenvectors, Jordan normal forms, complex eigenvalues in systems, nonhomogeneous systems; Ch4 the heat equation/separation of variables, orthogonality/Fourier coefficients, Fourier series & convergence, term-by-term differentiation/integration, the Fourier transform, and the Black-Scholes equation. MAM2012S is now a fully tracked course (see 2026-07-29 entry above) with its own `de` accent, no longer modelled only via `ConceptModuleCode`. Generalised eigenvectors, Jordan normal form, term-by-term differentiation, the Fourier transform, and Black-Scholes marked `hard`/`stretch` with `tips` populated on the hardest ones. Build/lint clean; Playwright screenshots 360/768/1440 + an expanded hard-card check (Black-Scholes), zero console errors. |
 | Concept Briefing — CSC1016S | done | No notes exist in `course-docs` yet (per instruction, not fabricated) — nothing to build. Confirmed the `/concepts` UI already renders an honest "No notes ingested for this module yet" empty state under its real title ("Computer Science", from `courses.ts`), verified live via Playwright; will populate automatically once notes are added and a data file is created. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
@@ -234,12 +307,16 @@ clean; an 11-route Playwright sweep (`/`, `/timetable`, `/modules` ×5, `/concep
 `/planner` ×2, `/tests`) with zero console/page errors; `/concepts` specifically
 re-checked under emulated `prefers-reduced-motion: reduce` (content unaffected) and via
 keyboard Tab traversal (focus reaches the search field, difficulty/tag chips, and card
-"show full briefing" toggles in a sensible order). Total: 51 concept briefings across
-4 modules (4 STA2005S + 12 MAM2013S + 20 MAM2014S + 19 MAM2012S), all cross-linked to
-real transcribed course-docs, none fabricated. Nothing else is planned for this feature
-unless the owner requests further scope (e.g. ingesting later STA2005S weeks, or
-MAM2012S's remaining matrix-algebra/vector-geometry/complex-numbers chapters not yet
-covered by these 19 differential-equations-focused cards).
+"show full briefing" toggles in a sensible order). Total at the time: 51 concept
+briefings across 4 modules (4 STA2005S + 12 MAM2013S + 20 MAM2014S + 19 MAM2012S — the
+MAM2012S figure was later found to be a miscount of 17, see the 2026-07-29 decisions-log
+entry). As of 2026-07-29 the total is 62 (13 STA2005S + 12 MAM2013S + 20 MAM2014S + 17
+MAM2012S), after adding 9 STA2005S cards from a newly found fuller notes document — see
+"Current state" above. All cross-linked to real transcribed course-docs, none fabricated.
+Nothing else is planned for this feature unless the owner requests further scope (e.g.
+ingesting later STA2005S weeks/topics, or MAM2012S's remaining matrix-algebra/vector-
+geometry/complex-numbers chapters not yet
+covered by these 17 differential-equations-focused cards).
 
 ## Decisions log
 
@@ -554,6 +631,34 @@ integration`, `fourier-transform-infinite-domain`, and `black-scholes-equation` 
 explicit flags that these are the most demanding synthesis topics in the document
 (Jordan form combines nearly every earlier systems concept; Black-Scholes chains
 Cauchy-Euler + the full Fourier-transform heat-equation machinery from two other cards).
+(2026-07-29) — MAM2012S promoted from `ConceptModuleCode`-only to a full 5th tracked
+`CourseCode`, now that a real course info sheet exists (see "Current state" above for the
+full ripple). Picked accent token `de` (from the course's own "2DE" nickname, matching how
+`ra` came from "2RA") with colour lime `#A3E635` — manually contrast-checked before
+picking it (>11:1 on both `base` and `surface`), and confirmed via WebFetch-free direct
+computation rather than assumed.
+(2026-07-29) — Both irregular "some Wednesdays" lecture sessions (MAM2012S's 5 dates,
+MAM2014S's 7 dates) were cross-checked against each other, not just against the calendar
+individually: all 12 dates across the two courses are completely disjoint, meaning they
+share the same Wed Period-4/M320 slot but never on the same real day. Left the timetable's
+clash detector unmodified (it's weekday-based, not date-aware, so this pair still
+triggers its weekly warning) rather than adding date-awareness for one pair of sessions —
+documented with explanatory `note` text on both sessions instead, per the same "irregular
+session" pattern established for MAM2013S in step 3.
+(2026-07-29) — `STA2005S Notes.pdf` (a fuller "Applied Linear Regression" reference,
+dated 2019) was matched against `tests.ts`'s own `sta-test-1` scope list before deciding
+to use it as a concept-briefing source, rather than assuming a differently-dated document
+is automatically in scope — it covers the general linear model, MLE, inference, ANOVA,
+residual diagnostics, variable selection and Gauss-Markov (all named in that scope), but
+not bootstrapping or PCA (also named there) or any Test 2 topic, so cards were only added
+for the topics actually present, consistent with the "only cover what's actually
+transcribed" rule already established for STA2005S/MAM2012S.
+(2026-07-29) — Corrected a stale concept count: MAM2012S's briefings were recorded as
+"19" in the section tracker and in the 2026-07-27 decisions-log entry above, but a direct
+count of `id:` entries in `data/concepts/mam2012s.ts` gives 17 — the true count was
+miscounted when originally logged, not a new discrepancy. Left the original 2026-07-27
+entry's prose otherwise untouched (append-only log) and corrected the section tracker row
+directly, per the "trust current file state over a memory/log snapshot" principle.
 
 ## Blockers / needs owner input
 
@@ -576,11 +681,15 @@ Cauchy-Euler + the full Fourier-transform heat-equation machinery from two other
   you're ready — just say so, or do it yourself via vercel.com → New Project → import the
   repo (no config needed, it's a standard Next.js app).
 
-**Waiting on:**
-- **MAM2012S** — owner mentioned they're pending registration for a possible 5th course.
-  Not added anywhere yet (no info sheet, not confirmed) — will ingest the same way as
-  MAM2014S once registration is confirmed and the course info sheet is dropped in
-  `course-docs`.
+**New real timetable clash (2026-07-29, needs an owner decision):**
+- **MAM2012S Tue 11:00–11:45 (M320) directly clashes with CSC1016S's current Tue
+  11:00–11:45 lecture (JD LT2)**, every week — both are real, non-`tbc` slots, so this
+  isn't a data error. CSC1016S's Tuesday slot is itself still only the owner's *intended*
+  pick pending Amathuba re-confirmation (see the item above), so there may be room to
+  resolve this by choosing a different CSC1016S session — but MAM2012S's lecture time is
+  fixed by the department (Tue/Fri/some-Wed, Period 4, per the course info sheet), so it
+  can't move. Surfaces correctly on `/timetable` and the dashboard's Urgent Flags tile;
+  not silently resolved.
 
 **Open owner questions:**
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.

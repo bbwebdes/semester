@@ -18,7 +18,7 @@ or generate coursework.
 
 ## Owner + real course data (source of truth)
 
-The four live courses for this semester. Full outlines live in `/course-docs`; these are
+The five live courses for this semester. Full outlines live in `/course-docs`; these are
 the transcription source. **Where the source is internally inconsistent (see the STA date
 note), flag it for owner confirmation — do not silently pick one.**
 
@@ -38,7 +38,32 @@ note), flag it for owner confirmation — do not silently pick one.**
   Erni confirmed via Amathuba post that the grid dates (1 Sep, 12 Oct) are correct — the
   outline has been updated to match. No longer needs a `confirm` flag.
 - R sessions: online introduction to R — Tue 2pm (one-off, week of 27 Jul). R workshops
-  run weekly throughout the semester, Wed/Thu/Fri 14:00–16:00.
+  run weekly throughout the semester, Wed/Thu/Fri 14:00–16:00. **R is a major, ongoing
+  component of this course, not a side topic** — week 1's formal introduction is built on
+  for the rest of the semester, feeding directly into the Practical Test and assignments.
+  Install R and RStudio as early as possible; week 1's learning outcomes are: follow a
+  basic R program, create/save script files, do basic calculations (incl. vector/variable
+  operations), produce basic plots (box/scatter/histogram) and adjust graphical
+  parameters, read data into R, and work with vectors/characters/data frames.
+
+**MAM2012S (2DE) — Differential Equations** (accent: `de`, lime)
+- Convenor/lecturer: Mr Thomas van Heerden (thomas.vanheerden@uct.ac.za — put "MAM2012S"
+  in the subject line, he teaches two courses this semester).
+- Lectures: Tue, Fri, and some Wednesdays, 11:00–11:45 (Period 4), M320. Wednesdays:
+  5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct — these deliberately alternate with MAM2014S's own
+  irregular Wed Period-4/M320 slot (29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct),
+  so the two courses never actually share that room on the same real date, even though the
+  timetable's (date-unaware) clash detector flags the pair every week. Tutorial
+  (compulsory): Fri 14:00–15:00, Hahn 4G — confirmed via Amathuba group sign-up (30/30,
+  full); none in week 1 (self-study tutorial sheet instead).
+- Assessments: Class Record = 10%·tutorial tests + 45%·Test 1 + 45%·Test 2. Final =
+  max(20%·CR + 80%·exam, 40%·CR + 60%·exam). DP: CR ≥35%, full tutorial attendance.
+- Dates: Test 1 — Mon 31 Aug, 18:00 (venue TBC). Test 2 — Thu 15 Oct, 18:00 (venue TBC).
+  Both weekdays cross-checked against the 2026 calendar and match the source, so no
+  `confirm` flag needed.
+- **Real timetable clash:** MAM2012S's Tue 11:00–11:45 lecture directly overlaps
+  CSC1016S's current Tue 11:00–11:45 lecture slot, every week — a genuine scheduling
+  conflict (not a data error), surfaced correctly by the existing clash detector.
 
 **CSC1016S — Computer Science** (accent: `csc`, green)
 - Convenor: Mr Aslam Safla (aslam@cs.uct.ac.za). Sick notes: sick-csc1016s@cs.uct.ac.za.

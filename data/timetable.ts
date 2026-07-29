@@ -143,7 +143,7 @@ export const timetable: Session[] = [
     start: "11:00",
     end: "11:45",
     venue: "M320",
-    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot.",
+    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot. Shares this Wed Period-4/M320 slot with MAM2012S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware.",
   },
   {
     courseCode: "MAM2014S",
@@ -153,5 +153,43 @@ export const timetable: Session[] = [
     end: "16:00",
     venue: "Bio LT",
     note: "Confirmed via Amathuba group sign-up (21/30) — corrects an earlier Fri 14:00–14:45, MCB Sem A entry that doesn't match the real chosen group.",
+  },
+
+  // MAM2012S (2DE) — Differential Equations
+  {
+    courseCode: "MAM2012S",
+    kind: "lecture",
+    day: "Tue",
+    start: "11:00",
+    end: "11:45",
+    venue: "M320",
+    note: "Period 4. Clashes every week with CSC1016S's current Tue 11:00–11:45 lecture slot (JD LT2) — a real conflict, not a data error; see the timetable clash banner and PROJECT_STATUS.md Blockers.",
+  },
+  {
+    courseCode: "MAM2012S",
+    kind: "lecture",
+    day: "Fri",
+    start: "11:00",
+    end: "11:45",
+    venue: "M320",
+    note: "Period 4.",
+  },
+  {
+    courseCode: "MAM2012S",
+    kind: "lecture",
+    day: "Wed",
+    start: "11:00",
+    end: "11:45",
+    venue: "M320",
+    note: "Not every week — only 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Shares this Wed Period-4/M320 slot with MAM2014S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware.",
+  },
+  {
+    courseCode: "MAM2012S",
+    kind: "tutorial",
+    day: "Fri",
+    start: "14:00",
+    end: "15:00",
+    venue: "Hahn 4G",
+    note: "Confirmed via Amathuba group sign-up (30/30, full). No face-to-face tutorial in week 1 — a self-study tutorial sheet instead.",
   },
 ];

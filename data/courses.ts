@@ -148,4 +148,29 @@ export const courses: Course[] = [
       "Test average of at least 30%",
     ],
   },
+  {
+    code: "MAM2012S",
+    title: "MAM2012S (2DE) — Differential Equations",
+    accent: "de",
+    convenor: {
+      name: "Mr Thomas van Heerden",
+      role: "Course Convenor & Lecturer",
+      email: "thomas.vanheerden@uct.ac.za",
+      note: "Put \"MAM2012S\" in the email subject line — he teaches two courses this semester and can't tell which one you mean otherwise. If your question is already answered on the course info sheet or Amathuba, he won't reply.",
+    },
+    contacts: [],
+    lectureInfo:
+      "Tue, Fri, and some Wednesdays, 11:00–11:45 (Period 4), M320. Wednesdays: 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Tutorial (compulsory): Fri 14:00–15:00, Hahn 4G — confirmed via Amathuba group sign-up (30/30, full). No face-to-face tutorial in week 1 — complete the tutorial sheet in your own time instead.",
+    assessmentWeights: [
+      { label: "Tutorial Tests", weight: 0.1 },
+      { label: "Test 1", weight: 0.45 },
+      { label: "Test 2", weight: 0.45 },
+    ],
+    finalMarkFormula:
+      "Class Record = 10% Tutorial Tests + 45% Test 1 + 45% Test 2. Final = max(20% Class Record + 80% Exam, 40% Class Record + 60% Exam)",
+    dpRules: [
+      "Class Record of at least 35%",
+      "Attend every tutorial session",
+    ],
+  },
 ];

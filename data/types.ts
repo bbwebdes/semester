@@ -1,6 +1,11 @@
-export type CourseCode = "STA2005S" | "CSC1016S" | "MAM2013S" | "MAM2014S";
+export type CourseCode =
+  | "STA2005S"
+  | "CSC1016S"
+  | "MAM2013S"
+  | "MAM2014S"
+  | "MAM2012S";
 
-export type AccentToken = "sta" | "csc" | "mam" | "ra";
+export type AccentToken = "sta" | "csc" | "mam" | "ra" | "de";
 
 export type Contact = {
   name: string;
@@ -91,11 +96,11 @@ export type StudyPlan = {
   resources: StudyPlanResource[];
 };
 
-// Concept briefings are keyed by note-set, not by dashboard registration status —
-// this lets a module with real transcribed notes (e.g. MAM2012S, pending registration
-// confirmation) get briefings before it's added as a tracked `CourseCode` elsewhere in
-// the app (courses.ts/timetable.ts/tests.ts). Extend here as new note-sets arrive.
-export type ConceptModuleCode = CourseCode | "MAM2012S";
+// Concept briefings are keyed by note-set, not by dashboard registration status.
+// Now that every note-set module (including MAM2012S) is also a tracked `CourseCode`,
+// this is just an alias — kept distinct so a future module with notes but no
+// registration yet can widen it again without touching every concepts/* call site.
+export type ConceptModuleCode = CourseCode;
 
 export type ConceptDifficulty = "core" | "stretch" | "hard";
 

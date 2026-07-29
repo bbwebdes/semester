@@ -167,4 +167,28 @@ export const tests: Assessment[] = [
       "Venue and syllabus to be announced closer to the time",
     ],
   },
+
+  // MAM2012S (2DE) — Differential Equations
+  {
+    id: "mam2012-test-1",
+    courseCode: "MAM2012S",
+    kind: "test",
+    title: "Test 1",
+    date: "2026-08-31",
+    start: "18:00",
+    venue: "TBC",
+    weight: 0.45,
+    scope: ["Linear ODEs — see the notes' table of contents for full chapter detail"],
+  },
+  {
+    id: "mam2012-test-2",
+    courseCode: "MAM2012S",
+    kind: "test",
+    title: "Test 2",
+    date: "2026-10-15",
+    start: "18:00",
+    venue: "TBC",
+    weight: 0.45,
+    scope: ["Systems of linear ODEs and linear PDEs — see the notes' table of contents for full chapter detail"],
+  },
 ];
