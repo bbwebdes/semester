@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { format, parseISO } from "date-fns";
 import type { Course, Session, Weekday } from "@/data/types";
 import { accentClasses } from "@/lib/accent";
 import {
+  buildWeekVariants,
+  dateOfDayThisWeek,
   findClashes,
-  findDatedSessionSlots,
   findNextSession,
   formatTimeRange,
   getTodayLabel,
@@ -166,13 +166,51 @@ export function TimetableView({
     return map;
   }, [courses]);
 
-  const clashIndices = useMemo(() => findClashes(sessions), [sessions]);
+  // If any sessions alternate on a shared day/time/venue slot (e.g. MAM2012S/
+  // MAM2014S's Wed lectures), offer an explicit toggle between them instead of
+  // ever rendering both at once — that's what used to produce a false-positive
+  // clash. `selectedVariantId` starts at the first variant (deterministic, no
+  // `now` needed, so it matches server and client on first paint) and is then
+  // corrected to whichever variant is real for the current week once `now` is
+  // available client-side.
+  const weekVariants = useMemo(() => buildWeekVariants(sessions), [sessions]);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    null,
+  );
+  const hasAutoSelectedVariant = useRef(false);
+
+  useEffect(() => {
+    if (hasAutoSelectedVariant.current || !now || !weekVariants) return;
+    const match = weekVariants.find((v) =>
+      v.chosen.dates!.includes(dateOfDayThisWeek(v.chosen.day, now)),
+    );
+    setSelectedVariantId(match?.id ?? weekVariants[0].id);
+    hasAutoSelectedVariant.current = true;
+  }, [now, weekVariants]);
+
+  const activeVariant =
+    weekVariants?.find((v) => v.id === selectedVariantId) ??
+    weekVariants?.[0] ??
+    null;
+  const displaySessions = activeVariant ? activeVariant.sessions : sessions;
+
+  const autoVariantId =
+    now && weekVariants
+      ? (weekVariants.find((v) =>
+          v.chosen.dates!.includes(dateOfDayThisWeek(v.chosen.day, now)),
+        )?.id ?? null)
+      : null;
+
+  const clashIndices = useMemo(
+    () => findClashes(displaySessions),
+    [displaySessions],
+  );
 
   const { clean, clashing, unresolved } = useMemo(() => {
     const clean: Session[] = [];
     const clashing: Session[] = [];
     const unresolved: Session[] = [];
-    sessions.forEach((session, index) => {
+    displaySessions.forEach((session, index) => {
       if (session.tbc) {
         unresolved.push(session);
       } else if (clashIndices.has(index)) {
@@ -182,16 +220,11 @@ export function TimetableView({
       }
     });
     return { clean, clashing, unresolved };
-  }, [sessions, clashIndices]);
+  }, [displaySessions, clashIndices]);
 
   const nextSession = useMemo(
     () => (now ? findNextSession(clean, now) : undefined),
     [clean, now],
-  );
-
-  const datedSlots = useMemo(
-    () => (now ? findDatedSessionSlots(sessions, now) : []),
-    [sessions, now],
   );
 
   const rows = useMemo(() => buildTableRows(clean), [clean]);
@@ -237,35 +270,55 @@ export function TimetableView({
         </div>
       )}
 
-      {datedSlots.length > 0 && (
+      {weekVariants && (
         <div className="flex flex-col gap-2 rounded-2xl border border-line bg-surface p-4">
           <h2 className="text-sm font-semibold text-muted">
-            This week&apos;s alternating slot
+            Alternating slot: {activeVariant?.chosen.day}{" "}
+            {formatTimeRange(
+              activeVariant?.chosen.start ?? "",
+              activeVariant?.chosen.end ?? "",
+            )}
+            , {activeVariant?.chosen.venue}
           </h2>
-          <ul className="flex flex-col gap-1 text-sm">
-            {datedSlots.map((slot, i) => {
-              const dateLabel = format(parseISO(slot.weekDate), "EEE d MMM");
-              const accent = slot.active
-                ? accentClasses[
-                    courseByCode.get(slot.active.courseCode)?.accent ?? "sta"
-                  ]
-                : null;
+          <div
+            role="tablist"
+            aria-label="Which week's version to show"
+            className="flex w-fit gap-1 rounded-full border border-line bg-surface-2/50 p-1"
+          >
+            {weekVariants.map((variant) => {
+              const accent = accentClasses[
+                courseByCode.get(variant.courseCode)?.accent ?? "sta"
+              ];
+              const selected = activeVariant?.id === variant.id;
               return (
-                <li key={i} className="text-text">
-                  <span className="text-muted">{dateLabel}: </span>
-                  {slot.active ? (
-                    <span className={`font-semibold ${accent?.text ?? ""}`}>
-                      {slot.active.courseCode} lecture, {slot.venue}
-                    </span>
-                  ) : (
-                    <span className="text-muted">
-                      no lecture in this {slot.day} {formatTimeRange(slot.start, slot.end)} slot this week
-                    </span>
+                <button
+                  key={variant.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setSelectedVariantId(variant.id)}
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                    selected ? "bg-surface text-text" : "text-muted hover:text-text"
+                  }`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`h-1.5 w-1.5 rounded-full ${accent.bg} ring-1 ${accent.ring}`}
+                  />
+                  {variant.label} · {variant.courseCode}
+                  {autoVariantId === variant.id && (
+                    <span className="text-xs text-muted">(this week)</span>
                   )}
-                </li>
+                </button>
               );
             })}
-          </ul>
+          </div>
+          <p className="text-xs text-muted">
+            Which week you get doesn&apos;t strictly alternate 1-2-1-2 every
+            single week — it follows each course&apos;s own published dates.
+            &quot;This week&quot; above is worked out from today&apos;s real
+            date; flip the toggle to preview the other version.
+          </p>
         </div>
       )}
 

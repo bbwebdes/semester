@@ -219,9 +219,12 @@ placeholder. Detect and flag overlapping sessions. "Now / Next" awareness: highl
 current and next session from the live clock. Responsive: grid at ≥768px, a single-day
 agenda list on mobile with a day switcher. For sessions that only happen on specific real
 dates (`Session.dates`, e.g. MAM2012S/MAM2014S's alternating "some Wednesdays" Period-4
-slot), a "this week's alternating slot" card resolves which one is real for the current
-week from the actual calendar date — separate from the (deliberately date-agnostic)
-weekly clash detector, which still flags such pairs every week regardless.
+slot), `resolveSessionsForWeek()` resolves each such group down to whichever single
+candidate is real for the current week before clash detection ever runs, so the two never
+appear — or falsely clash — together; `/timetable` additionally offers an explicit
+Week 1/Week 2 toggle (`buildWeekVariants()`) defaulting to the real one, letting the owner
+preview the other version manually. Both the timetable page and the dashboard's clash-
+sensitive tiles feed off this resolved list.
 
 **2. Module info** — `/modules` is a grid of Tilted Cards (one per module, accent-bordered)
 → `/modules/[code]` detail: convenor + contacts, venues, assessment weights, DP rules, and

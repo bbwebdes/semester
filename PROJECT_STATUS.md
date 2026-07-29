@@ -1,10 +1,11 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-29 (later same day) — CSC1016S switched to Mon 12:00–13:00,
-> resolving the real Tue clash with MAM2012S; added a date-aware "this week's alternating
-> slot" checker to `/timetable` so the MAM2012S/MAM2014S Wed false-positive clash now has
-> a real per-week answer instead of just an explanatory note. See "Current state" below.
+> Last updated: 2026-07-29 (third update today) — the MAM2012S/MAM2014S Wed clash banner
+> is gone from both `/timetable` and the dashboard: sessions that only happen on specific
+> real dates now resolve to a single "this week" candidate everywhere clashes are computed,
+> and `/timetable` offers an explicit Week 1/Week 2 toggle instead of ever showing both
+> alternating candidates at once. See "Current state" below.
 
 ## Current state (one paragraph)
 
@@ -214,6 +215,43 @@ confirmed the CSC1016S/MAM2012S clash entry is gone from the dashboard's Urgent 
 tile (only the Wed false-positive remains), and the new checker card renders correctly
 above the clash banner with the right course, date and venue.
 
+**2026-07-29 (third update today) — eliminated the Wed false-positive clash banner,
+added an explicit Week 1/Week 2 toggle:** The owner asked to actually remove the
+MAM2012S/MAM2014S Wed clash banner (rather than just annotate it), and to present the
+alternation as two explicit timetable variants ("week 1" / "week 2").
+
+Rather than special-casing the clash detector (which is intentionally date-agnostic and
+shared by other code), the fix is architectural: `lib/timetable.ts` gained
+`resolveSessionsForWeek(sessions, now)`, which finds any sessions sharing a day/time/venue
+slot on different real dates (an "alternating group" — currently just MAM2012S/MAM2014S's
+Wed lecture) and resolves each group down to whichever single candidate's `dates` list
+includes the real date for that weekday this week (or none, dropping both, if neither
+matches). Both `/timetable` and the dashboard now feed clash detection and weekly displays
+through this resolved list, so the two candidates are never both present at once —
+the clash simply has nothing to compare against anymore, everywhere, not just visually
+suppressed on one page.
+
+`/timetable` additionally got `buildWeekVariants(sessions)`, which turns an alternating
+group into one `WeekVariant` per candidate (each a full, self-consistent session list) and
+renders them as an explicit toggle ("Week 1 · MAM2014S" / "Week 2 · MAM2012S") above the
+grid, defaulting to whichever is real for the current week (a "(this week)" tag marks it)
+and letting the owner manually preview the other version. Copy under the toggle is
+explicit that the pattern doesn't strictly alternate 1-2-1-2 (verified: two pairs of
+consecutive real weeks are both MAM2014S — 12/19 Aug and 23/30 Sep — and the week of
+9 Sep has neither), so "Week 1"/"Week 2" are labels for the two versions, not a strict
+biweekly cycle claim.
+
+The dashboard's `UrgentFlagsTile`, `NextClassTile` and `ThisWeekTile` all now receive
+`resolveSessionsForWeek(sessions, now)` instead of the raw `timetable` array, so "This
+week" only ever lists the real candidate and Urgent Flags no longer raises the Wed flag.
+
+Build + lint clean; production build Playwright-verified live: `/timetable`'s clash
+banner is gone entirely (only the "Set your slot" TBC panel remains, which is unrelated),
+the toggle defaults correctly to "Week 1 · MAM2014S (this week)" against today's real
+date (29 Jul 2026), clicking "Week 2" correctly swaps the Wed session to MAM2012S with
+no banner reappearing, and the dashboard's Urgent Flags tile no longer lists the Wed
+clash (only the unrelated Amathuba-verification and unset-slot flags remain).
+
 ## Section tracker
 
 | Section | Status | Notes |
@@ -225,7 +263,7 @@ above the clash banner with the right course, date and venue.
 | Concept Briefing — CSC1016S | done | No notes exist in `course-docs` yet (per instruction, not fabricated) — nothing to build. Confirmed the `/concepts` UI already renders an honest "No notes ingested for this module yet" empty state under its real title ("Computer Science", from `courses.ts`), verified live via Playwright; will populate automatically once notes are added and a data file is created. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
-| Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. 2026-07-29: added a "this week's alternating slot" checker (`findDatedSessionSlots()`) that resolves which of MAM2012S/MAM2014S's alternating Wed lectures is real for the current week, verified live. |
+| Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. 2026-07-29 (final update): replaced the earlier "this week's alternating slot" checker with `resolveSessionsForWeek()` + `buildWeekVariants()` — the MAM2012S/MAM2014S Wed clash banner is now fully eliminated (both here and on the dashboard) rather than just annotated, and the page offers an explicit Week 1/Week 2 toggle defaulting to whichever is real today, verified live. |
 | Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
 | Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
 | Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
@@ -713,6 +751,15 @@ the existing `findClashes()` date-aware — that function is also used for the (
 date-agnostic weekly grid rendering and the general clash banner, and making it
 date-aware would be a much bigger change for a need that's really just "tell me which
 one is real this week," which the new dedicated helper answers directly.
+(2026-07-29, third update today) — Superseded `findDatedSessionSlots()` (from the entry
+above) with `resolveSessionsForWeek()` + `buildWeekVariants()`, once the owner asked to
+actually eliminate the clash banner rather than just annotate it. The earlier helper only
+answered "which is real this week" for display in a side card; it didn't change what fed
+`findClashes()`, so the banner stayed. The fix that actually removes the banner has to act
+on the *input* to clash detection, not just add commentary next to its output — filtering
+down to one candidate per alternating group before it ever reaches `findClashes()` means
+there's nothing left to compare, on every page that computes clashes (both `/timetable`
+and the dashboard), not just a visual suppression on one of them.
 
 ## Blockers / needs owner input
 
@@ -740,12 +787,11 @@ one is real this week," which the new dedicated helper answers directly.
   CSC1016S switched to Mon 12:00–13:00, JD LT2 — the owner's stated choice, still
   pending Amathuba re-confirmation (same caveat as every CSC1016S slot change this
   project). Verified no new clash was introduced on Monday.
-- A false-positive Wed clash between MAM2012S and MAM2014S remains on `/timetable`'s
-  clash banner (their shared Period-4/M320 slot's specific real dates never actually
-  coincide — see decisions log) — this is a known, accepted limitation of the
-  (deliberately not date-aware) clash detector, not something to "fix" by suppressing
-  the banner. `/timetable` now also shows a "This week's alternating slot" card that
-  resolves it with the real per-week answer.
+- The MAM2012S/MAM2014S Wed false-positive clash banner is also gone (third update
+  today): both courses' Wed sessions are now resolved down to a single real-for-this-week
+  candidate everywhere clashes are computed (`resolveSessionsForWeek()`), and
+  `/timetable` offers an explicit Week 1/Week 2 toggle instead of ever rendering both
+  candidates together. See "Current state" above for the full design.
 
 **Open owner questions:**
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
 import type { Assessment, Course, Session, StudyPlan } from "@/data/types";
@@ -12,6 +12,7 @@ import {
   getUpcomingSessions,
   isHappeningNow,
   kindLabel,
+  resolveSessionsForWeek,
 } from "@/lib/timetable";
 import {
   daysUntil,
@@ -363,6 +364,15 @@ export function DashboardView({
     ? studyPlans.some((p) => daysUntil(p.startDate, now) <= 0)
     : false;
 
+  // Resolves alternating same-slot sessions (e.g. MAM2012S/MAM2014S's shared Wed
+  // lecture) down to whichever one is real for the current week, so dashboard
+  // tiles never show or clash-flag both at once. Falls back to the raw list
+  // before `now` is available client-side (first paint only).
+  const weekSessions = useMemo(
+    () => (now ? resolveSessionsForWeek(sessions, now) : sessions),
+    [sessions, now],
+  );
+
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 md:px-6">
       <header className="flex flex-col gap-2">
@@ -373,15 +383,15 @@ export function DashboardView({
       </header>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <NextClassTile sessions={sessions} courses={courses} now={now} />
+        <NextClassTile sessions={weekSessions} courses={courses} now={now} />
         <NextTestTile
           tests={tests}
           courses={courses}
           now={now}
           urgent={!planStartingNow}
         />
-        <ThisWeekTile sessions={sessions} courses={courses} now={now} />
-        <UrgentFlagsTile tests={tests} sessions={sessions} now={now} />
+        <ThisWeekTile sessions={weekSessions} courses={courses} now={now} />
+        <UrgentFlagsTile tests={tests} sessions={weekSessions} now={now} />
         <ActivePlanTile
           studyPlans={studyPlans}
           tests={tests}

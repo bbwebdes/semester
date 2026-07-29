@@ -162,44 +162,82 @@ export function dateOfDayThisWeek(day: Weekday, now: Date): string {
   return format(addDays(monday, weekOrder.indexOf(day)), "yyyy-MM-dd");
 }
 
-export type DatedSessionSlot = {
-  day: Weekday;
-  start: string;
-  end: string;
-  venue: string;
-  /** This week's real date for `day`. */
-  weekDate: string;
-  /** The session whose `dates` list includes `weekDate`, if any. */
-  active: Session | null;
-  /** Every session sharing this day/time/venue slot across different real dates. */
-  candidates: Session[];
-};
-
 /**
  * Groups sessions that only happen on specific real dates (the `dates` field —
  * e.g. MAM2012S/MAM2014S's alternating "some Wednesdays" Period-4/M320 slot) by
- * day+start+end+venue, and resolves which one (if any) is the real session for
- * the current week. Lets the UI answer "which course's lecture is this actually,
- * this week?" instead of just flagging a same-slot clash every week regardless
- * of the real calendar.
+ * day+start+end+venue. Only groups with 2+ candidates ("alternating groups") are
+ * returned — a session with `dates` but no same-slot sibling isn't alternating
+ * with anything and is left alone by both functions below.
  */
-export function findDatedSessionSlots(
-  sessions: Session[],
-  now: Date,
-): DatedSessionSlot[] {
-  const dated = sessions.filter((s) => s.dates && s.dates.length > 0);
+function findAlternatingGroups(sessions: Session[]): Session[][] {
   const groups = new Map<string, Session[]>();
-  dated.forEach((s) => {
+  sessions.forEach((s) => {
+    if (!s.dates || s.dates.length === 0) return;
     const key = `${s.day}|${s.start}|${s.end}|${s.venue}`;
     const list = groups.get(key) ?? [];
     list.push(s);
     groups.set(key, list);
   });
+  return Array.from(groups.values()).filter((g) => g.length >= 2);
+}
 
-  return Array.from(groups.values()).map((candidates) => {
-    const { day, start, end, venue } = candidates[0];
-    const weekDate = dateOfDayThisWeek(day, now);
-    const active = candidates.find((s) => s.dates!.includes(weekDate)) ?? null;
-    return { day, start, end, venue, weekDate, active, candidates };
+/**
+ * Resolves each alternating group down to whichever single candidate is real for
+ * the current week (or none, if neither's `dates` list includes it), and returns
+ * the full session list with the other candidate(s) removed. This is the
+ * canonical "this week's real timetable" — used wherever sessions feed into
+ * clash detection or weekly displays, so an alternating pair whose specific real
+ * dates never coincide (see MAM2012S/MAM2014S) never even appears together, and
+ * never produces a false-positive clash.
+ */
+export function resolveSessionsForWeek(sessions: Session[], now: Date): Session[] {
+  const alternatingGroups = findAlternatingGroups(sessions);
+  const excluded = new Set<Session>();
+  alternatingGroups.forEach((group) => {
+    const weekDate = dateOfDayThisWeek(group[0].day, now);
+    const active = group.find((s) => s.dates!.includes(weekDate));
+    group.forEach((s) => {
+      if (s !== active) excluded.add(s);
+    });
+  });
+  return sessions.filter((s) => !excluded.has(s));
+}
+
+export type WeekVariant = {
+  id: string;
+  label: string;
+  courseCode: Session["courseCode"];
+  /** The alternating-group candidate this variant includes, for date-matching. */
+  chosen: Session;
+  /** The full session list with every other candidate in this group removed. */
+  sessions: Session[];
+};
+
+/**
+ * If any sessions share a day/time/venue slot on different real dates (an
+ * alternating group), returns one `WeekVariant` per candidate — each a full,
+ * self-consistent session list containing only that candidate — so the UI can
+ * offer an explicit "Week 1 / Week 2" toggle instead of ever rendering both
+ * candidates at once (which would falsely clash). Returns null if there's no
+ * alternating group in the data, so callers can skip the toggle entirely.
+ *
+ * Only the first alternating group found is turned into variants — today's data
+ * has exactly one (MAM2012S/MAM2014S's shared Wed slot). If a second unrelated
+ * alternating group is ever added, it should get its own toggle rather than
+ * multiplying variants combinatorially with this one.
+ */
+export function buildWeekVariants(sessions: Session[]): WeekVariant[] | null {
+  const [alternating] = findAlternatingGroups(sessions);
+  if (!alternating) return null;
+
+  return alternating.map((chosen, index) => {
+    const excluded = new Set(alternating.filter((s) => s !== chosen));
+    return {
+      id: `week-${index + 1}`,
+      label: `Week ${index + 1}`,
+      courseCode: chosen.courseCode,
+      chosen,
+      sessions: sessions.filter((s) => !excluded.has(s)),
+    };
   });
 }
