@@ -1,11 +1,16 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-08-02 — CSC1016S dropped by the owner and removed from the dashboard
+> Last updated: 2026-08-02 (second update today) — generated a real study plan for all
+> 8 tests across all 4 courses (previously only 1 plan existed, for the now-dropped
+> CSC1016S). Fixed a real dashboard bug this surfaced: `ActivePlanTile`'s plan-picking
+> logic only ever worked correctly for exactly one plan. See "Current state" below.
+>
+> Earlier today — CSC1016S dropped by the owner and removed from the dashboard
 > entirely (all data files, tokens, accent, and its lone study plan); STA2005S/MAM2012S/
 > MAM2013S venues updated per owner correction; timetable session cards simplified to
 > code/kind/time/venue only (no note text); `/concepts` restructured with Week 1..N tabs
-> plus an "All weeks" master tab. See "Current state" below.
+> plus an "All weeks" master tab.
 
 ## Current state (one paragraph)
 
@@ -311,6 +316,63 @@ React hydration comment between "Week" and the number defeated a naive text sear
 first). Full Playwright screenshot/Lighthouse sweep not re-run this session — flagged
 as a gap below, not silently skipped.
 
+**2026-08-02 (second update today) — study plans generated for all 8 tests:** Owner
+asked to read CLAUDE.md fully and generate study plans for all tests, using the
+study-plan generation command in CLAUDE.md ("read tested scope from `/course-docs`,
+set `startDate = testDate − lead time` scaled by scope size/weighting, break into
+phased checkable tasks, link resources"). Interpreted "all tests" as the 8
+`kind: "test"` assessments specifically (not the STA2005S practical test/assignments,
+which are either still `tbc` with no real date/scope or aren't "tests" to prep for the
+same way).
+
+Scope for each plan came from real sources, not invented: STA2005S's two tests already
+had good topic lists in `tests.ts` (unchanged). MAM2012S's "Linear ODEs" / "Systems of
+linear ODEs and linear PDEs" test-1/test-2 split in `tests.ts` was already correct and
+mapped cleanly onto the 5+6 concept-briefing chapters (Ch1–2 vs. Ch3–4) already
+transcribed from `2DE NOTES.pdf`. MAM2013S and MAM2014S were different: `tests.ts` only
+had procedural placeholder text for their scope ("provisional date...",
+"in-person, invigilated, closed-book") — neither course's `course-docs` (course info
+sheet or the full NOTES.pdf) states which chapters are tested in Test 1 vs. Test 2.
+Replaced both with the real chapter-by-chapter topic lists from the already-transcribed
+concept briefings, split at a structurally sensible boundary (MAM2013S: Test 1 ends
+after Subgroups, Test 2 starts at Cyclic groups; MAM2014S: Test 1 ends after the
+Monotone Convergence Theorem, Test 2 starts at series). **This split is a pacing
+estimate, not a confirmed fact** — flagged as the last `scope` bullet on all four
+affected tests and in Blockers below, per CLAUDE.md's "flag for owner confirmation,
+don't silently pick one" rule (same treatment as the `/concepts` week-estimate flagged
+earlier today).
+
+Lead times scaled roughly by scope size and weight (STA/MAM2012S/MAM2013S: 12–18 days;
+MAM2014S: 16–21 days, since its Test 2 alone covers 8 chapters). Every phase task is
+concrete and checkable (re-derive X from memory, solve N practice problems, apply a
+named test/theorem to worked examples) and scope-and-schedule only — no worked
+solutions, per CLAUDE.md's study-planner constraint. Resources reuse the exact verified
+URLs already stored in each module's `/data/concepts/*.ts` (StatQuest, Khan Academy,
+MIT OCW, 3Blue1Brown, Socratica) rather than fabricating new links.
+
+Generating 8 real plans (vs. the 1 that existed before, for the now-dropped CSC1016S)
+surfaced a genuine dashboard bug: `ActivePlanTile` picked a plan via
+`studyPlans.find(p => daysUntil(p.startDate, now) >= 0)`, which returns the first
+*array-order* match, not the most relevant one — with 1 plan this degenerated to "the
+plan," but with 8 it would show whichever plan happens to sit first in the array
+regardless of which test is actually soonest, and — separately — the dashboard's
+`planStartingNow` flag used `.some(...)` across all plans, so once *any* single plan
+anywhere in the semester had started, the next-test countdown tile would silently stay
+non-urgent for the rest of the semester. Fixed with a shared `pickActivePlan()` helper
+(new `lib/studyPlans.ts`): excludes plans whose test has already passed, prefers a plan
+that's already started (soonest-test-first among those), else falls back to whichever
+plan starts soonest. Both `ActivePlanTile` and the dashboard's `planStartingNow` now
+derive from the same single selection so they can't disagree. Verified the fix
+directly (not just visually): computed `pickActivePlan` by hand against today's real
+date (2 Aug) and confirmed it correctly picks MAM2014S Test 1's plan (starts in 6 days,
+soonest of all 8) rather than STA2005S Test 1's plan (which sits first in the array but
+starts later, in 14 days).
+
+`npm run build`, `npm run lint`, `npx tsc --noEmit` all clean; all 8
+`/planner/[testId]` routes statically generated. No Playwright browser available this
+session (same constraint as earlier today) — spot-checked via the dev server that all
+8 planner routes return 200 and render real content.
+
 ## Section tracker
 
 | Section | Status | Notes |
@@ -327,7 +389,7 @@ as a gap below, not silently skipped.
 | Dashboard home | done | Step 4. Bento tiles for next class / next test + countdown / this week / urgent flags / active plan (empty state). Build/lint clean; screenshotted 360/768/1440 + reduced-motion. |
 | Modules | done | Step 5. Tilted Card grid + detail pages (convenor/contacts/schedule/weights/DP/updates). Build/lint clean; screenshotted 360/768/1440; fixed a real dim-past-update contrast bug (see decisions). |
 | Test dates | done | Step 6. Soonest-first list, live countdowns, clash banner + badges, `confirm` markers, tentative/TBC section. Build/lint clean; screenshotted 360/768/1440. |
-| Study planner | done | Step 7. `/planner` + `/planner/[testId]` Scroll Stack timeline, `localStorage` check-offs (verified across reload). One real plan generated (CSC1016S Theory Test 1). Build/lint clean; screenshotted 360/768/1440 + live scroll-stack + checkbox persistence. |
+| Study planner | done | Step 7. `/planner` + `/planner/[testId]` Scroll Stack timeline, `localStorage` check-offs (verified across reload). 2026-08-02: the original CSC1016S plan was removed when the course was dropped; all 8 real tests across the 4 tracked courses now have a generated plan (see "Current state"). Build/lint clean; all 8 `/planner/[testId]` routes statically generated. |
 | MAM2014S ingestion | done | Post-step-7. 4th course added end to end (types, tokens, all 4 data files, CLAUDE.md). Build/lint clean; screenshotted all 5 routes at 360/1440; fixed a card-overflow bug and a false-clash dashboard bug (see decisions). |
 | Polish / a11y / perf | done | Step 8. Lighthouse 100/100/100/100 on all 8 routes (production build), fixed a real CLS regression on the dashboard. Star Border in place; Specular Button/Gradual Blur deliberately deferred (see decisions). Responsive/focus/reduced-motion re-verified everywhere. **Deploy not done** — needs owner's Vercel auth. |
 
@@ -853,8 +915,39 @@ that would produce numbers that *look* as authoritative as STA2005S's real "W1" 
 while actually being a guess dressed up as fact. Chose visible, even estimation instead,
 with a persistent UI caveat and a Blockers entry, consistent with CLAUDE.md's standing
 rule to flag inconsistent/unconfirmed source data rather than silently pick an answer.
+(2026-08-02, second update today) — Interpreted "generate study plans for all tests" as
+the 8 `kind: "test"` assessments, not every `Assessment` (which also includes STA2005S's
+practical test and two assignments). Reasoning: those three are all still `tbc` with no
+real date, and the study-plan schema is keyed to a `testId` with a `startDate` computed
+backward from a real test date — there's no sensible `startDate` to compute for an
+assessment that doesn't have a date yet. If the owner wants plans for those too once
+dates are announced, that's a natural follow-up, not a scope decision to make now.
+(2026-08-02, second update today) — Rather than invent a MAM2013S/MAM2014S Test1/Test2
+scope split from nothing, reused the same "flag as estimate, don't silently pick"
+pattern already established for `/concepts`'s week grouping today: picked a
+structurally sensible chapter boundary (see "Current state"), then made the estimate
+visible in two places — the last `scope` bullet on the affected `tests.ts` entries
+(shown on `/tests`) and the study plan's own `scope` array (shown on `/planner`) — so
+whoever's reading either page sees the same caveat, not just one.
+(2026-08-02, second update today) — `ActivePlanTile`'s plan-selection bug (picking the
+first array-order match rather than the most relevant plan) was latent since step 7 but
+invisible with only one plan ever in `studyPlans`. This is the second time in this
+project a single-item assumption baked into early code silently broke once real data
+diversified (see the 2026-07-26 MAM2014S-era "raw `findDateClashes(tests)` call" entry
+for the first) — worth treating "does this still hold with N>1 items" as a standing
+question whenever a feature that previously only ever saw one of something starts
+seeing several.
 
 ## Blockers / needs owner input
+
+**New (2026-08-02, second update today) — MAM2013S/MAM2014S Test 1 vs. Test 2 scope
+split is an estimate:** Neither course's `course-docs` states which chapters are
+tested in Test 1 vs. Test 2 (unlike MAM2012S and STA2005S, where the split is either
+stated directly or unambiguous from the source). The split used for both `tests.ts`'s
+`scope` and the matching study plans is a structurally-reasonable estimate (see
+"Current state"), not a confirmed fact. Confirm against whatever scope announcement
+the lecturers eventually post and adjust `tests.ts`/`studyPlans.ts` if the real split
+differs.
 
 **New (2026-08-02) — Concepts week grouping is an estimate, not a verified schedule:**
 - `/concepts`'s week tabs are populated from real data (STA2005S's four "W1"-labelled
@@ -935,10 +1028,11 @@ rule to flag inconsistent/unconfirmed source data rather than silently pick an a
 ## Next up
 
 Every build-order step (1–8) is complete except deploying to Vercel, which needs the
-owner's own account authorization — see "Blockers" above. Beyond that, the only open
-item from this session is confirming `/concepts`'s estimated week grouping against the
-real lecture schedule (see Blockers) — everything else requested (CSC1016S removal,
-the three venue corrections, the timetable card simplification, the week tabs
-themselves) is done. Any further work from here is either (a) resolving one of the open
+owner's own account authorization — see "Blockers" above. Beyond that, the open items
+from today's two sessions are both estimate-confirmation flags, not missing work:
+`/concepts`'s week grouping and the MAM2013S/MAM2014S Test 1/2 scope split (see
+Blockers) — everything actually requested (CSC1016S removal, the three venue
+corrections, the timetable card simplification, the week tabs, and study plans for all
+8 tests) is done. Any further work from here is either (a) resolving one of the open
 owner questions above, (b) the owner deploying (or asking for help walking through it),
 or (c) new scope the owner asks for.

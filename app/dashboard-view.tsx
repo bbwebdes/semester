@@ -20,6 +20,7 @@ import {
   getNextConfirmed,
   hasConfirmedDate,
 } from "@/lib/tests";
+import { isPlanActive, pickActivePlan } from "@/lib/studyPlans";
 import { BentoTile } from "./components/bento-tile";
 
 function courseFor(courses: Course[], code: string) {
@@ -266,19 +267,16 @@ function UrgentFlagsTile({
 }
 
 function ActivePlanTile({
-  studyPlans,
+  plan,
   tests,
   courses,
   now,
 }: {
-  studyPlans: StudyPlan[];
+  plan: StudyPlan | undefined;
   tests: Assessment[];
   courses: Course[];
   now: Date | null;
 }) {
-  const plan = now
-    ? studyPlans.find((p) => daysUntil(p.startDate, now) >= 0)
-    : studyPlans[0];
   const test = plan ? tests.find((t) => t.id === plan.testId) : undefined;
   const course = plan ? courseFor(courses, plan.courseCode) : undefined;
   const accent = accentClasses[course?.accent ?? "sta"];
@@ -360,9 +358,9 @@ export function DashboardView({
     };
   }, []);
 
-  const planStartingNow = now
-    ? studyPlans.some((p) => daysUntil(p.startDate, now) <= 0)
-    : false;
+  const activePlan = now ? pickActivePlan(studyPlans, tests, now) : studyPlans[0];
+  const planStartingNow =
+    now && activePlan ? isPlanActive(activePlan, now) : false;
 
   // Resolves alternating same-slot sessions (e.g. MAM2012S/MAM2014S's shared Wed
   // lecture) down to whichever one is real for the current week, so dashboard
@@ -393,7 +391,7 @@ export function DashboardView({
         <ThisWeekTile sessions={weekSessions} courses={courses} now={now} />
         <UrgentFlagsTile tests={tests} sessions={weekSessions} now={now} />
         <ActivePlanTile
-          studyPlans={studyPlans}
+          plan={activePlan}
           tests={tests}
           courses={courses}
           now={now}

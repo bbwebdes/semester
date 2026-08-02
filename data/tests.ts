@@ -78,7 +78,16 @@ export const tests: Assessment[] = [
     venue: "TBC",
     weight: 0.5,
     confirm: true,
-    scope: ["Provisional date — venue and time to be announced on Amathuba"],
+    scope: [
+      "Mathematical induction & the Well-Ordering Axiom",
+      "Divisibility, gcd, Bézout's Lemma & prime factorisation",
+      "Congruence, ℤₙ & modular arithmetic",
+      "Permutations, matrix notation & cycle decomposition",
+      "The alternating group & the Parity Theorem",
+      "Groups: definition, examples & Cayley tables",
+      "Subgroups & the Subgroup Test",
+      "Provisional date — venue and time to be announced on Amathuba. The Test 1/Test 2 chapter split above is a pacing estimate (MAM2013S NOTES.pdf and the course info sheet don't publish one) — confirm against the announced test scope on Amathuba.",
+    ],
   },
   {
     id: "mam-test-2",
@@ -89,7 +98,14 @@ export const tests: Assessment[] = [
     venue: "TBC",
     weight: 0.5,
     confirm: true,
-    scope: ["Provisional date — venue and time to be announced on Amathuba"],
+    scope: [
+      "Cyclic groups, element order & the Fundamental Theorem of Finite Cyclic Groups",
+      "Group homomorphisms & isomorphisms",
+      "Cosets and Lagrange's Theorem",
+      "Normal subgroups & factor (quotient) groups",
+      "The First Isomorphism Theorem",
+      "Provisional date — venue and time to be announced on Amathuba. The Test 1/Test 2 chapter split above is a pacing estimate (MAM2013S NOTES.pdf and the course info sheet don't publish one) — confirm against the announced test scope on Amathuba.",
+    ],
   },
 
   // MAM2014S (2RA) — Real Analysis
@@ -104,8 +120,14 @@ export const tests: Assessment[] = [
     venue: "TBC",
     weight: 0.475,
     scope: [
-      "In-person, invigilated, closed-book",
-      "Venue and syllabus to be announced closer to the time",
+      "Sets, number systems & ordered fields",
+      "Well-ordering, induction & the irrationality of √2",
+      "The Completeness Axiom, suprema & infima",
+      "Nested intervals, the Archimedean Property & density of ℚ",
+      "Cardinality: countable & uncountable sets",
+      "Limits of sequences & the Algebraic/Order Limit Theorems",
+      "The Monotone Convergence Theorem",
+      "In-person, invigilated, closed-book. Venue TBC. The Test 1/Test 2 chapter split above is a pacing estimate (MAM2014S NOTES.pdf and the course info sheet don't publish one) — confirm against the announced test scope.",
     ],
   },
   {
@@ -119,8 +141,15 @@ export const tests: Assessment[] = [
     venue: "TBC",
     weight: 0.475,
     scope: [
-      "In-person, invigilated, closed-book",
-      "Venue and syllabus to be announced closer to the time",
+      "Series basics; the Comparison Test & the p-series",
+      "Subsequences & the Bolzano-Weierstrass Theorem; Cauchy sequences",
+      "Absolute/conditional convergence; the Ratio Test & the Root Test",
+      "Rearrangements of series",
+      "Open, closed & compact sets in ℝ (topology of ℝ)",
+      "Limits of functions, continuity & uniform continuity",
+      "Derivatives, Fermat's Theorem & the Mean Value Theorem family",
+      "Pointwise/uniform convergence of functions; power series & Taylor series",
+      "In-person, invigilated, closed-book. Venue TBC. The Test 1/Test 2 chapter split above is a pacing estimate (MAM2014S NOTES.pdf and the course info sheet don't publish one) — confirm against the announced test scope.",
     ],
   },
 
