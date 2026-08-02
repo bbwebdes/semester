@@ -52,6 +52,12 @@ export function ConceptCard({
           >
             {difficultyLabel[briefing.difficulty]}
           </span>
+          {briefing.week != null && (
+            <span className="rounded-full border border-line px-2 py-0.5 text-xs font-medium text-muted">
+              Week {briefing.week}
+              {!briefing.weekConfirmed && " (est.)"}
+            </span>
+          )}
         </div>
         <span className="text-xs text-muted">
           {briefing.courseCode} · {briefing.sourceRef}

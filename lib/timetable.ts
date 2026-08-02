@@ -164,16 +164,20 @@ export function dateOfDayThisWeek(day: Weekday, now: Date): string {
 
 /**
  * Groups sessions that only happen on specific real dates (the `dates` field —
- * e.g. MAM2012S/MAM2014S's alternating "some Wednesdays" Period-4/M320 slot) by
- * day+start+end+venue. Only groups with 2+ candidates ("alternating groups") are
- * returned — a session with `dates` but no same-slot sibling isn't alternating
- * with anything and is left alone by both functions below.
+ * e.g. MAM2012S/MAM2014S's alternating "some Wednesdays" Period-4 slot) by
+ * day+start+end. Venue is deliberately not part of the key: what makes two
+ * sessions "alternating" is that a student can't be in both at once (same
+ * day/time), regardless of which room either happens to be in — and their real
+ * venues can differ (MAM2012S meets in LS 2D on Wednesdays, MAM2014S in M320).
+ * Only groups with 2+ candidates ("alternating groups") are returned — a
+ * session with `dates` but no same-slot sibling isn't alternating with
+ * anything and is left alone by both functions below.
  */
 function findAlternatingGroups(sessions: Session[]): Session[][] {
   const groups = new Map<string, Session[]>();
   sessions.forEach((s) => {
     if (!s.dates || s.dates.length === 0) return;
-    const key = `${s.day}|${s.start}|${s.end}|${s.venue}`;
+    const key = `${s.day}|${s.start}|${s.end}`;
     const list = groups.get(key) ?? [];
     list.push(s);
     groups.set(key, list);

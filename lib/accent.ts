@@ -10,12 +10,6 @@ export const accentClasses: Record<
     bg: "bg-sta/10",
     ring: "ring-sta",
   },
-  csc: {
-    border: "border-csc/70",
-    text: "text-csc",
-    bg: "bg-csc/10",
-    ring: "ring-csc",
-  },
   mam: {
     border: "border-mam/70",
     text: "text-mam",

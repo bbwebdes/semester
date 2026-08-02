@@ -68,50 +68,6 @@ export const tests: Assessment[] = [
     weight: 0.2,
   },
 
-  // CSC1016S — Computer Science
-  {
-    id: "csc-theory-test-1",
-    courseCode: "CSC1016S",
-    kind: "test",
-    title: "Theory Test 1",
-    date: "2026-08-26",
-    start: "18:00",
-    venue: "Online via Amathuba — venue TBC",
-  },
-  {
-    id: "csc-theory-test-2",
-    courseCode: "CSC1016S",
-    kind: "test",
-    title: "Theory Test 2",
-    date: "2026-10-14",
-    start: "18:00",
-    venue: "Online via Amathuba — venue TBC",
-  },
-  {
-    id: "csc-practest-1",
-    courseCode: "CSC1016S",
-    kind: "practest",
-    title: "Practical Test 1 (weeks 5–6)",
-    date: "2026-08-24",
-    tbc: true,
-    scope: [
-      "Offered twice (week of 24 Aug and week of 31 Aug) — best first-attempt mark counts",
-      "Exact day/time depends on your chosen practical session slot",
-    ],
-  },
-  {
-    id: "csc-practest-2",
-    courseCode: "CSC1016S",
-    kind: "practest",
-    title: "Practical Test 2 (weeks 11–12)",
-    date: "2026-10-12",
-    tbc: true,
-    scope: [
-      "Offered twice (week of 12 Oct and week of 19 Oct) — best first-attempt mark counts",
-      "Exact day/time depends on your chosen practical session slot",
-    ],
-  },
-
   // MAM2013S (2IA)
   {
     id: "mam-test-1",

@@ -19,6 +19,8 @@ function chipClass(active: boolean) {
     : "rounded-full border border-line px-3 py-1 text-xs font-medium text-muted hover:text-text";
 }
 
+type WeekFilter = number | "all";
+
 export function ConceptsView({
   briefings,
   modules,
@@ -29,6 +31,15 @@ export function ConceptsView({
   const [search, setSearch] = useState("");
   const [difficulty, setDifficulty] = useState<ConceptDifficulty | "all">("all");
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set());
+  const [selectedWeek, setSelectedWeek] = useState<WeekFilter>("all");
+
+  const weeks = useMemo(() => {
+    const set = new Set<number>();
+    briefings.forEach((b) => {
+      if (b.week != null) set.add(b.week);
+    });
+    return [...set].sort((a, b) => a - b);
+  }, [briefings]);
 
   const allTags = useMemo(() => {
     const tags = new Set<string>();
@@ -48,6 +59,7 @@ export function ConceptsView({
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return briefings.filter((b) => {
+      if (selectedWeek !== "all" && b.week !== selectedWeek) return false;
       if (difficulty !== "all" && b.difficulty !== difficulty) return false;
       if (activeTags.size > 0 && !b.tags.some((t) => activeTags.has(t))) return false;
       if (!q) return true;
@@ -57,9 +69,10 @@ export function ConceptsView({
         b.tags.some((t) => t.toLowerCase().includes(q))
       );
     });
-  }, [briefings, search, difficulty, activeTags]);
+  }, [briefings, search, difficulty, activeTags, selectedWeek]);
 
-  const hasFilters = search.trim() !== "" || difficulty !== "all" || activeTags.size > 0;
+  const hasFilters =
+    search.trim() !== "" || difficulty !== "all" || activeTags.size > 0 || selectedWeek !== "all";
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 md:px-6">
@@ -71,6 +84,53 @@ export function ConceptsView({
           Glanceable pre-lecture priming and post-lecture consolidation, per concept.
         </p>
       </header>
+
+      {weeks.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <div
+            role="tablist"
+            aria-label="Filter by week"
+            className="flex gap-1 overflow-x-auto rounded-full border border-line bg-surface p-1"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={selectedWeek === "all"}
+              onClick={() => setSelectedWeek("all")}
+              className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                selectedWeek === "all"
+                  ? "bg-surface-2 text-text"
+                  : "text-muted hover:text-text"
+              }`}
+            >
+              All weeks
+            </button>
+            {weeks.map((week) => (
+              <button
+                key={week}
+                type="button"
+                role="tab"
+                aria-selected={selectedWeek === week}
+                onClick={() => setSelectedWeek(week)}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                  selectedWeek === week
+                    ? "bg-surface-2 text-text"
+                    : "text-muted hover:text-text"
+                }`}
+              >
+                Week {week}
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted">
+            Week grouping follows syllabus order. Only cards explicitly marked
+            from a dated Week 1 source are confirmed — later weeks are an
+            estimated pacing guide spread evenly across the semester, pending
+            confirmation against the real lecture-by-lecture schedule (cards
+            show &quot;(est.)&quot; where this applies).
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4">
         <label className="flex flex-col gap-1.5">

@@ -1,11 +1,10 @@
 export type CourseCode =
   | "STA2005S"
-  | "CSC1016S"
   | "MAM2013S"
   | "MAM2014S"
   | "MAM2012S";
 
-export type AccentToken = "sta" | "csc" | "mam" | "ra" | "de";
+export type AccentToken = "sta" | "mam" | "ra" | "de";
 
 export type Contact = {
   name: string;
@@ -123,6 +122,14 @@ export type ConceptBriefing = {
   id: string;
   courseCode: ConceptModuleCode;
   sourceRef: string;
+  // Which teaching week this concept belongs to, for the Concepts page's week
+  // tabs. Only set from an explicit week marker in the source material (e.g.
+  // STA2005S's "W1" decks) counts as confirmed (`weekConfirmed: true`);
+  // otherwise it's an estimated pacing guide (syllabus order spread evenly
+  // across the semester) pending owner confirmation against the real
+  // lecture-by-lecture schedule.
+  week?: number;
+  weekConfirmed?: boolean;
   title: string;
   tags: string[];
   difficulty: ConceptDifficulty;

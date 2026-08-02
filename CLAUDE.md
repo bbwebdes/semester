@@ -18,7 +18,7 @@ or generate coursework.
 
 ## Owner + real course data (source of truth)
 
-The five live courses for this semester. Full outlines live in `/course-docs`; these are
+The four live courses for this semester. Full outlines live in `/course-docs`; these are
 the transcription source. **Where the source is internally inconsistent (see the STA date
 note), flag it for owner confirmation — do not silently pick one.**
 
@@ -26,7 +26,7 @@ note), flag it for owner confirmation — do not silently pick one.**
 - Convenor: Dr Birgit Erni (birgit.erni@uct.ac.za, PD Hahn 6.64). Lecturer: Mr Miguel
   Rodo (miguel.rodo@uct.ac.za, PD Hahn 5.52). Admin: Ms Nodumo Maqubela
   (nodumo.maqubela@uct.ac.za — mention you're a STA2005S student).
-- Lectures: 08:00 Mon–Fri, PD Hahn 2. Plus one 1-hr tutorial + one 1-hr R computer prac
+- Lectures: 08:00 Mon–Fri, JD LT 1. Plus one 1-hr tutorial + one 1-hr R computer prac
   per week (slots chosen in week 1 — `tbc` until owner sets them).
 - Assessments: Test 1 (25%), Test 2 (25%), Assignment 1 (20%), Practical Test (10%),
   Assignment 2 (20%). Final = 0.3·class + 0.7·exam. DP: both assignments done, ≥40% avg
@@ -49,10 +49,10 @@ note), flag it for owner confirmation — do not silently pick one.**
 **MAM2012S (2DE) — Differential Equations** (accent: `de`, lime)
 - Convenor/lecturer: Mr Thomas van Heerden (thomas.vanheerden@uct.ac.za — put "MAM2012S"
   in the subject line, he teaches two courses this semester).
-- Lectures: Tue, Fri, and some Wednesdays, 11:00–11:45 (Period 4), M320. Wednesdays:
+- Lectures: Tue and Wed, LS 2D; Fri, LS 2A. 11:00–11:45 (Period 4). Wednesdays:
   5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct — these deliberately alternate with MAM2014S's own
   irregular Wed Period-4/M320 slot (29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct),
-  so the two courses never actually share that room on the same real date, even though the
+  so the two courses never actually clash on the same real date, even though the
   timetable's (date-unaware) clash detector flags the pair every week. Tutorial
   (compulsory): Fri 14:00–15:00, Hahn 4G — confirmed via Amathuba group sign-up (30/30,
   full); none in week 1 (self-study tutorial sheet instead).
@@ -62,23 +62,10 @@ note), flag it for owner confirmation — do not silently pick one.**
   Both weekdays cross-checked against the 2026 calendar and match the source, so no
   `confirm` flag needed.
 
-**CSC1016S — Computer Science** (accent: `csc`, green)
-- Convenor: Mr Aslam Safla (aslam@cs.uct.ac.za). Sick notes: sick-csc1016s@cs.uct.ac.za.
-- Lectures: one face-to-face lecture/week on Amathuba's blended-learning schedule, plus
-  daily Mon–Thu video lectures. Current pick (2026-07-29, owner's stated intent, still
-  pending Amathuba re-confirmation): Mon 12:00–13:00, JD LT2 — chosen specifically to
-  avoid MAM2012S's fixed Tue 11:00–11:45 lecture. Plus one 2-hr practical session/week
-  (slot `tbc`).
-- Assessments: Final = 0.10·prac avg + 0.15·theory-test avg + 0.15·prac-test avg +
-  0.60·exam. DP: prac-test avg ≥50%, and (3/5·prac + 2/5·prac-test) ≥45%.
-- Dates: Theory Test 1 — 26 Aug, 18:00. Practical Test 1 — weeks 5–6. Theory Test 2 —
-  14 Oct, 18:00. Practical Test 2 — weeks 11–12. (Each prac test offered twice; best of
-  first attempt used.)
-
 **MAM2013S (2IA)** (accent: `mam`, violet)
 - Convenor/lecturer: Dr Janelidze-Gray (tamar.janelidze-gray@uct.ac.za, M323.1).
-- Lectures: Mon, some Wed, Fri, 12:00–13:00, M320. Tutorials (compulsory): Thu 14:00–16:00
-  or Fri 14:00–16:00 — owner signs up for one (`tbc`).
+- Lectures: Mon, some Wed, Fri, 12:00–13:00, M320. Tutorial (compulsory): Thu 14:00–15:00,
+  M200 — confirmed via Amathuba group sign-up.
 - Assessments: CR = 0.5·T1 + 0.5·T2. Final = max(0.6·E + 0.4·CR, 0.8·E + 0.2·CR).
   DP: CR ≥20% and ≥80% tutorial attendance.
 - Dates: Test 1 — 2 Sep (time/venue TBC). Test 2 — 7 Oct (time/venue TBC).
@@ -160,15 +147,15 @@ Base / chrome:
 
 Module accents (used identically across timetable, cards, tests, plans):
 - `sta`  #4C9AFF — STA2005S (blue)
-- `csc`  #3DD68C — CSC1016S (green)
 - `mam`  #C084FC — MAM2013S (violet)
 - `ra`   #2DD4BF — MAM2014S (teal)
+- `de`   #A3E635 — MAM2012S (lime)
 
 Semantic:
 - `accent` #F5A524 — amber. Primary CTAs ("Generate study plan"), and the "start
   studying" urgency state. The ONLY CTA colour.
 - `danger` #FF5C5C — overdue, clash flags, `confirm` markers
-- `ok`     #3DD68C — done/complete (shares the green; fine)
+- `ok`     #3DD68C — done/complete
 
 Rules: a module's accent is its identity everywhere — the timetable block fill, the module
 card border/glow, the test dot, the study-plan spine. `accent` (amber) is reserved for
@@ -213,7 +200,8 @@ tinted with the relevant module accent.
 ## Features (detailed)
 
 **1. Timetable** — weekly grid, Mon–Fri (Sat optional), time rows 08:00–18:00, blocks
-colour-coded by module accent. Each block shows code · kind · venue · time. Renders fixed
+colour-coded by module accent. Each block shows only code · kind · venue · time — no
+extra note/detail text, kept deliberately minimal. Renders fixed
 lectures and owner-chosen tut/prac slots; `tbc` slots render as a muted "set your slot"
 placeholder. Detect and flag overlapping sessions. "Now / Next" awareness: highlight the
 current and next session from the live clock. Responsive: grid at ≥768px, a single-day
@@ -289,9 +277,9 @@ care (intuition-first explanation, an extra worked micro-example, populated `tip
 since that's the owner's weak spot. **This is a personal study scaffold only** — see
 the disclaimer below.
 
-**Source of truth.** `/course-docs/{MAM2012S,MAM2013S,MAM2014S,STA2005S}` and (once
-notes exist) `/course-docs/CSC1016S`. The concept and sub-concept list is extracted
-from the notes themselves — never invented. Where notes are ambiguous, the briefing
+**Source of truth.** `/course-docs/{MAM2012S,MAM2013S,MAM2014S,STA2005S}`. The concept
+and sub-concept list is extracted from the notes themselves — never invented. Where
+notes are ambiguous, the briefing
 reflects the notes' own framing rather than guessing, and only covers what's actually
 been transcribed so far (a module's briefings may lag its full syllabus if later
 weeks' notes haven't been ingested yet — see each module's data file for what's
@@ -310,6 +298,16 @@ like MAM2012S can get briefings before it's a tracked `CourseCode` elsewhere), p
 drives the page's module grouping/ordering/accent and empty states, reusing each
 tracked course's real accent token where one exists (falls back to neutral styling
 for a module, like MAM2012S, that isn't tracked elsewhere in the dashboard yet).
+
+**Week grouping.** Each `ConceptBriefing` carries an optional `week` (teaching week
+number) and `weekConfirmed` (whether that week comes from an explicit marker in the
+source material, e.g. STA2005S's "W1" decks, vs. an estimated pacing guide spread
+evenly across the semester in syllabus order). `/concepts` offers a tab bar — "All
+weeks" (the master view, unfiltered) plus one tab per week present in the data — that
+filters every module's concepts down to that week, alongside the existing
+search/difficulty/tag filters. Cards show a "Week N" badge, suffixed "(est.)" when
+`weekConfirmed` is false. Treat unconfirmed weeks as a study-pacing aid, not a verified
+lecture schedule, until the owner confirms them against the real weekly timetable.
 
 **Content rules.** Pitch at rigorous 2nd-year level — correct definitions, stated
 assumptions, the actual theorem where one exists — but lead with intuition.

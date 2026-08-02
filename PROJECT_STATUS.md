@@ -1,11 +1,11 @@
 # PROJECT STATUS — Semester (Personal UCT Dashboard)
 
 > Maintained by Claude Code. Updated at the end of every working block.
-> Last updated: 2026-07-29 (third update today) — the MAM2012S/MAM2014S Wed clash banner
-> is gone from both `/timetable` and the dashboard: sessions that only happen on specific
-> real dates now resolve to a single "this week" candidate everywhere clashes are computed,
-> and `/timetable` offers an explicit Week 1/Week 2 toggle instead of ever showing both
-> alternating candidates at once. See "Current state" below.
+> Last updated: 2026-08-02 — CSC1016S dropped by the owner and removed from the dashboard
+> entirely (all data files, tokens, accent, and its lone study plan); STA2005S/MAM2012S/
+> MAM2013S venues updated per owner correction; timetable session cards simplified to
+> code/kind/time/venue only (no note text); `/concepts` restructured with Week 1..N tabs
+> plus an "All weeks" master tab. See "Current state" below.
 
 ## Current state (one paragraph)
 
@@ -252,6 +252,65 @@ date (29 Jul 2026), clicking "Week 2" correctly swaps the Wed session to MAM2012
 no banner reappearing, and the dashboard's Urgent Flags tile no longer lists the Wed
 clash (only the unrelated Amathuba-verification and unset-slot flags remain).
 
+**2026-08-02 — CSC1016S dropped, three venue corrections, timetable simplified,
+Concepts restructured by week:** The owner dropped CSC1016S from their course load and
+gave four unrelated data corrections in one request, all executed autonomously without
+a per-step review pause (consistent with the current auto-mode session).
+
+CSC1016S removed everywhere, not just hidden: `CourseCode`/`AccentToken` no longer
+include it, its `courses.ts`/`timetable.ts`/`tests.ts`/`moduleUpdates.ts` entries are
+gone, its `csc` accent token is gone from `globals.css`/`lib/accent.ts`/
+`app/components/bento-tile.tsx`'s glow map, and `studyPlans.ts` — which only ever held
+the one CSC1016S plan generated in step 7 — is now an empty array (the Planner page's
+existing empty state handles this with no code change needed). CLAUDE.md's course-data
+section updated to four live courses.
+
+Three venue corrections from the owner: STA2005S lectures moved to **JD LT 1** (was PD
+Hahn 2); MAM2012S lectures split by day — **LS 2D** on Tue/Wed, **LS 2A** on Fri (was
+M320 for all three); MAM2013S tutorial venue set to **M200** (previously unconfirmed/
+`TBC`). The MAM2012S venue change had a real architectural knock-on: `findAlternatingGroups()`
+in `lib/timetable.ts` (the function behind the MAM2012S/MAM2014S Wed Week-1/Week-2
+toggle from the 2026-07-29 work) grouped alternating sessions by `day|start|end|venue` —
+since MAM2012S's Wed venue no longer matches MAM2014S's M320, that key would have
+silently broken the toggle and reintroduced the false-positive Wed clash banner. Fixed
+by dropping `venue` from the grouping key (grouping is really about "can't be in both
+at the same day/time", which doesn't depend on venue) — verified the toggle and
+false-clash suppression both still work after the venue change.
+
+Timetable session cards (`SessionContent` in `app/timetable/timetable-view.tsx`)
+simplified per owner request: dropped the `note` text line entirely, so a card now
+shows exactly code · kind · time · venue, matching CLAUDE.md's original feature
+description (which the `note` additions had drifted away from over the session-by-
+session ingestion work). The separate "Set your slot" TBC panel (which also renders
+`note`) was left as-is since it's a different UI element, not one of these cards, and
+currently has nothing in it (no session in the data has `tbc: true` after the CSC1016S
+removal).
+
+`/concepts` restructured with week tabs per owner request: `ConceptBriefing` gained
+optional `week`/`weekConfirmed` fields. Only STA2005S's four cards from the explicitly-
+labelled "W1" slide decks got `weekConfirmed: true` (week 1) — no other source document
+in `/course-docs` states which week any topic was taught. For every other card, week
+numbers are an **estimated pacing guide**, computed by a one-off script
+(not committed — described here for reproducibility) that grouped each module's
+concepts by their existing `sourceRef` (already in syllabus order) and spread those
+groups evenly across a 12-week semester. This is explicitly not a verified lecture
+schedule — `/concepts` shows a caveat under the week tabs, and cards display
+"Week N (est.)" whenever `weekConfirmed` is false. `ConceptsView` gained a week tab bar
+("All weeks" plus one tab per week present in the data) that composes with the existing
+search/difficulty/tag filters. Flagged in Blockers below for owner confirmation against
+the real weekly lecture pacing, same treatment as any other `confirm`-style uncertain
+data in this project.
+
+`npm run build`, `npm run lint`, and `npx tsc --noEmit` all clean. Manually verified via
+the dev server (no Playwright browser available this session — not pre-installed and
+not added as a dependency to avoid an unrequested dependency change): `/timetable`
+renders the new venues (JD LT 1 ×5, LS 2D ×2, LS 2A ×1, M200) with zero CSC1016S
+sessions; `/`, `/modules`, `/tests` all show zero CSC1016S references; `/concepts`
+renders "All weeks" plus per-week tabs (checked the raw SSR HTML directly, since a
+React hydration comment between "Week" and the number defeated a naive text search at
+first). Full Playwright screenshot/Lighthouse sweep not re-run this session — flagged
+as a gap below, not silently skipped.
+
 ## Section tracker
 
 | Section | Status | Notes |
@@ -260,7 +319,8 @@ clash (only the unrelated Amathuba-verification and unset-slot flags remain).
 | Concept Briefing — MAM2013S | done | 12 concepts transcribed from the full `MAM2013S NOTES.pdf` (Introductory Algebra, 2IA): Ch1 Integers (induction, divisibility/gcd/Bézout, congruences/ℤₙ), Ch2 Permutations (cycles, parity/alternating group), Ch3 Groups (definition/Cayley tables, subgroups/centre, cyclic groups, homomorphisms/isomorphisms), Ch4 Lagrange's Theorem, Ch5 Factor groups (normal subgroups, First Isomorphism Theorem). Appendix A (sets/maps/equivalence relations) folded into the induction card's pre-lecture prereqs rather than given its own card, since the notes treat it as background review. Build/lint clean; Playwright screenshot 1440px, zero console errors. |
 | Concept Briefing — MAM2014S | done | 20 concepts transcribed from the full `MAM2014S NOTES.pdf` (Real Analysis, 2RA): Ch0 Preliminaries (sets/number systems), Ch1 The real numbers (induction/√2 irrationality, completeness axiom, consequences of completeness, cardinality), Ch2 Sequences and series (limits, Monotone Convergence Theorem, series basics, comparison/p-series, subsequences/Bolzano-Weierstrass, Cauchy sequences, absolute/conditional convergence, ratio/root tests, rearrangements), Ch3 Topology of ℝ, Ch4 Limits of functions/continuity/uniform continuity, Ch5 Derivatives & the MVT family, Ch6 Sequences/series of functions and power/Taylor series. Cardinality, uniform continuity, and rearrangements marked `stretch`; power series/Taylor series marked `hard` (with `tips`, since it's the most demanding topic in the course). Build/lint clean; Playwright screenshots 360/1440 + an expanded-card check, zero console errors. |
 | Concept Briefing — MAM2012S | done | 17 concepts (corrected 2026-07-29 from a stale "19" figure — verified by direct count) transcribed from the full `2DE NOTES.pdf` (MAM2000W - 2DE: Differential Equations): Ch1 linear independence/Wronskian; Ch2 homogeneous/nonhomogeneous constant-coefficient ODEs, the annihilator method, variation of parameters, Cauchy-Euler equations; Ch3 diagonalisable systems, the matrix exponential, generalised eigenvectors, Jordan normal forms, complex eigenvalues in systems, nonhomogeneous systems; Ch4 the heat equation/separation of variables, orthogonality/Fourier coefficients, Fourier series & convergence, term-by-term differentiation/integration, the Fourier transform, and the Black-Scholes equation. MAM2012S is now a fully tracked course (see 2026-07-29 entry above) with its own `de` accent, no longer modelled only via `ConceptModuleCode`. Generalised eigenvectors, Jordan normal form, term-by-term differentiation, the Fourier transform, and Black-Scholes marked `hard`/`stretch` with `tips` populated on the hardest ones. Build/lint clean; Playwright screenshots 360/768/1440 + an expanded hard-card check (Black-Scholes), zero console errors. |
-| Concept Briefing — CSC1016S | done | No notes exist in `course-docs` yet (per instruction, not fabricated) — nothing to build. Confirmed the `/concepts` UI already renders an honest "No notes ingested for this module yet" empty state under its real title ("Computer Science", from `courses.ts`), verified live via Playwright; will populate automatically once notes are added and a data file is created. |
+| Concept Briefing — CSC1016S | dropped | 2026-08-02: owner dropped CSC1016S entirely. It never had any concept briefings (no notes existed in `course-docs`), so nothing to remove from `/data/concepts` — the empty-state row this used to describe no longer applies since CSC1016S isn't in `conceptModules` at all now. |
+| Concepts week grouping | done | 2026-08-02: added `week`/`weekConfirmed` to `ConceptBriefing`; `/concepts` gained a "Week 1..N" + "All weeks" tab bar. Only STA2005S's 4 "W1"-labelled cards are `weekConfirmed: true`; the rest are an estimated pacing guide pending owner confirmation — see "Current state" and Blockers. |
 | Scaffold / tokens / fonts / nav shell | done | Step 1. Next.js 16 + TS + Tailwind v4, tokens + fonts wired, Pill Nav (desktop) + Bottom Dock (mobile), placeholder routes, dark placeholder home. Build + lint clean. |
 | Data layer (`/data`) | done | Step 2. `types.ts` + courses/timetable/tests/moduleUpdates/studyPlans seeded from real `/course-docs`; STA test dates flagged `confirm:true` per the prose/grid inconsistency. |
 | Timetable | done | Step 3. `<table>` weekly grid + mobile agenda, clash detection, now/next, `tbc` "set your slot" panel. Build/lint clean; Playwright-screenshotted at 360/768/1440, reduced-motion and keyboard-focus checked. 2026-07-29 (final update): replaced the earlier "this week's alternating slot" checker with `resolveSessionsForWeek()` + `buildWeekVariants()` — the MAM2012S/MAM2014S Wed clash banner is now fully eliminated (both here and on the dashboard) rather than just annotated, and the page offers an explicit Week 1/Week 2 toggle defaulting to whichever is real today, verified live. |
@@ -760,19 +820,60 @@ on the *input* to clash detection, not just add commentary next to its output �
 down to one candidate per alternating group before it ever reaches `findClashes()` means
 there's nothing left to compare, on every page that computes clashes (both `/timetable`
 and the dashboard), not just a visual suppression on one of them.
+(2026-08-02) — CSC1016S removed rather than left as an empty/dropped-looking entry: every
+file that referenced it (`types.ts`, `courses.ts`, `timetable.ts`, `tests.ts`,
+`moduleUpdates.ts`, `studyPlans.ts`, `globals.css`, `lib/accent.ts`,
+`app/components/bento-tile.tsx`) was edited to delete its data, not just hide it behind a
+flag — matches how the project already treats "real data only" for additions, applied
+symmetrically to removals. `studyPlans.ts` is now an empty array rather than deleted or
+stubbed differently, since `PlannerView` already had a real empty state for zero plans
+(built in step 7) — no new code needed.
+(2026-08-02) — `findAlternatingGroups()`'s grouping key changed from `day|start|end|venue`
+to `day|start|end` (dropping venue) when MAM2012S's venue diverged from MAM2014S's on
+their shared alternating Wednesday slot. The two sessions were only ever grouped by venue
+coincidentally (both happened to be M320); what actually makes them "alternating" is that
+a student can't attend both at the same day/time regardless of room, so venue was never
+the right disambiguator — this is a correctness fix surfaced by the venue change, not a
+new feature. Verified the Week 1/Week 2 toggle and the false-clash suppression both still
+work post-fix.
+(2026-08-02) — Concept week numbers modelled with two fields (`week`, `weekConfirmed`)
+rather than one, so the UI can visibly distinguish "we actually know this" (STA2005S's
+"W1" cards) from "this is a syllabus-order estimate" (every other card) — same spirit as
+`Assessment.confirm`, applied to a new kind of uncertain data. Computed the estimated
+weeks with a one-off Node script (grouped each module's concepts by existing `sourceRef`,
+spread those groups evenly across a 12-week window) rather than hand-assigning ~60
+numbers, since the grouping logic needed to be applied consistently and was easy to get
+wrong by hand; the script itself wasn't committed (not part of the app, a one-time data
+transform), but its logic is described in "Current state" for reproducibility if the
+estimate ever needs regenerating (e.g. once real weekly pacing is confirmed and specific
+weeks need hand-correcting instead).
+(2026-08-02) — Deliberately did not attempt to reverse-engineer real per-week pacing from
+indirect evidence (e.g. test dates implying roughly how much content precedes them) —
+that would produce numbers that *look* as authoritative as STA2005S's real "W1" markers
+while actually being a guess dressed up as fact. Chose visible, even estimation instead,
+with a persistent UI caveat and a Blockers entry, consistent with CLAUDE.md's standing
+rule to flag inconsistent/unconfirmed source data rather than silently pick an answer.
 
 ## Blockers / needs owner input
 
-**Timetable clash history (resolved, but needs a real Amathuba re-confirmation):**
-- The Mon 11:00 MAM2014S/CSC1016S clash (flagged since 2026-07-26) and the Tue 12:00
-  CSC1016S/MAM2013S clash it was briefly replaced by (flagged earlier on 2026-07-27) are
-  both moot now: the owner is moving CSC1016S to **Tue 11:00**, which the dashboard reflects
-  as of this session — no session on the timetable currently clashes. **This slot is the
-  owner's stated intent, not yet re-confirmed on Amathuba** — the convenor's announcement
-  says sign-up for one of 6 sessions (11am/12pm, Mon–Wed) closes **Tue 28 Jul, 10:00am**, and
-  explicitly says whichever Amathuba group is actually joined governs (not PeopleSoft/SEAT).
-  If the Tue 11am group turns out to be full or unavailable, or a different slot ends up
-  chosen after speaking to the convenor, the timetable will need a follow-up correction.
+**New (2026-08-02) — Concepts week grouping is an estimate, not a verified schedule:**
+- `/concepts`'s week tabs are populated from real data (STA2005S's four "W1"-labelled
+  cards, `weekConfirmed: true`) plus an estimated pacing guide for every other card
+  (spread evenly across a 12-week semester in syllabus order — see "Current state").
+  This needs owner confirmation against the real lecture-by-lecture schedule for
+  MAM2012S/MAM2013S/MAM2014S and the rest of STA2005S once that's known; until then,
+  treat "Week N" tabs beyond STA2005S's Week 1 as a study-pacing aid, not fact. No
+  `course-docs` source currently states which week any of these topics is taught.
+
+**Resolved 2026-08-02 (CSC1016S dropped):**
+- Every CSC1016S-related blocker/open-question previously logged here (the Amathuba
+  lecture-slot re-confirmation, the unset practical slot, the auto-generated study plan)
+  is moot — the course itself is gone from the dashboard as of this session. Left the
+  historical entries below in the decisions log untouched (append-only), since they're
+  an accurate record of what happened while the course was tracked.
+- MAM2013S tutorial venue is no longer an open question — the owner supplied **M200**
+  directly (see "Current state"), superseding the earlier "venue not yet shown on
+  Amathuba" note.
 
 **The one thing left to reach full build-order completion:**
 - **Deploy to Vercel** — every other part of step 8 (and steps 1–7) is done. This is the
@@ -797,22 +898,9 @@ and the dashboard), not just a visual suppression on one of them.
 - **Claude Code plan tier** (Pro / Max 5x / Max 20x) — sets model-routing expectations.
   Default assumption: Sonnet 4.6 for ~everything, Opus 4.8 only for hard schema/debugging
   work. On Pro this is comfortably within limits for this scope.
-- **CSC1016S practical session slot** — still genuinely unset; no Amathuba group screenshot
-  for it yet (unlike the lecture, which is confirmed Mon 11:00). Seeded `tbc:true`.
 - **STA2005S Practical Test date, Assignment 1 date** — not yet announced anywhere in the
   outline (not even a provisional week); seeded with `tbc:true` and no `date`.
-- **MAM2013S tutorial venue** — day/time confirmed (Thu 14:00–15:00, via a 2026-07-27
-  Amathuba Groups screenshot showing you're already signed up, 48/60) but the venue isn't
-  shown in that listing; seeded `venue: "TBC"`. Also: the welcome email describes tutorials
-  generically as 2-hour blocks (2–4pm) while your actual confirmed slot is 1 hour (2–3pm) —
-  not treated as an error since the Groups page is the more direct source, but worth a
-  glance next time you're on Amathuba given sign-up stays editable until Wed 29 Jul 11pm.
 - **App name** — "Semester" is a placeholder.
-- **Auto-generated CSC1016S study plan** — built proactively during step 7 to prove the
-  Scroll Stack/check-off feature works (see decisions log), not requested via the explicit
-  per-test generation command. Review its scope/phasing/lead-time and either keep it,
-  edit it, or say the word and it comes out — future plans can go back to being generated
-  only on request if preferred.
 - **MAM2014S test venues** — both Test 1 (24 Aug) and Test 2 (6 Oct) have confirmed
   date/time but "venues... will be announced closer to the time" per the source; seeded
   `venue: "TBC"`.
@@ -827,9 +915,12 @@ and the dashboard), not just a visual suppression on one of them.
 - STA2005S R prac (Tue 14:00–15:00, Scilab D) and STA2005S tutorial (Wed 14:00–15:00, LS2B)
   are confirmed real slots, not placeholders — owner-supplied Amathuba screenshots, see
   decisions log.
-- CSC1016S lecture corrected (2026-07-27) to Tue 12:00–12:45, Period 5, JD LT2, per the real
-  Amathuba Groups sign-up — supersedes the earlier Mon 11:00 entry; see decisions log and
-  Blockers for the new clash this revealed.
+- STA2005S lecture venue is **JD LT 1** (2026-08-02 owner correction, supersedes PD Hahn 2).
+- MAM2012S lecture venue is **LS 2D** (Tue/Wed) / **LS 2A** (Fri) (2026-08-02 owner
+  correction, supersedes M320 for all three days).
+- MAM2013S tutorial venue is **M200** (2026-08-02 owner correction, supersedes `TBC`).
+- CSC1016S dropped from the dashboard entirely (2026-08-02, owner's own course-load
+  change) — every prior CSC1016S fact in this log is historical only; see "Current state".
 - MAM2014S tracked as a 4th course (`ra` teal accent) — supersedes the earlier assumption
   that only three courses existed; see decisions log.
 - MAM2014S lecture slot confirmed as Period 4 (Mon/Thu/some-Wed, 11:00–11:45, M320,
@@ -844,7 +935,10 @@ and the dashboard), not just a visual suppression on one of them.
 ## Next up
 
 Every build-order step (1–8) is complete except deploying to Vercel, which needs the
-owner's own account authorization — see "Blockers" above. Nothing else is planned; this is
-the natural end of the CLAUDE.md build order. Any further work from here is either (a)
-resolving one of the open owner questions above, (b) the owner deploying (or asking for
-help walking through it), or (c) new scope the owner asks for.
+owner's own account authorization — see "Blockers" above. Beyond that, the only open
+item from this session is confirming `/concepts`'s estimated week grouping against the
+real lecture schedule (see Blockers) — everything else requested (CSC1016S removal,
+the three venue corrections, the timetable card simplification, the week tabs
+themselves) is done. Any further work from here is either (a) resolving one of the open
+owner questions above, (b) the owner deploying (or asking for help walking through it),
+or (c) new scope the owner asks for.

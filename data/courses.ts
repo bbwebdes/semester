@@ -26,7 +26,7 @@ export const courses: Course[] = [
       },
     ],
     lectureInfo:
-      "08:00 Mon–Fri, PD Hahn 2. Plus tutorial Wed 14:00–15:00 (LS2B) and R computer prac Tue 14:00–15:00 (Scilab D).",
+      "08:00 Mon–Fri, JD LT 1. Plus tutorial Wed 14:00–15:00 (LS2B) and R computer prac Tue 14:00–15:00 (Scilab D).",
     assessmentWeights: [
       { label: "Test 1", weight: 0.25 },
       { label: "Test 2", weight: 0.25 },
@@ -41,57 +41,6 @@ export const courses: Course[] = [
     ],
   },
   {
-    code: "CSC1016S",
-    title: "Computer Science",
-    accent: "csc",
-    convenor: {
-      name: "Mr Aslam Safla",
-      role: "Course Convenor",
-      email: "aslam@cs.uct.ac.za",
-    },
-    contacts: [
-      {
-        name: "Prof Sonia Berman",
-        role: "Lecturer",
-        email: "sonia@cs.uct.ac.za",
-      },
-      {
-        name: "Francois Meyer",
-        role: "Lecturer",
-        email: "francois.meyer@uct.ac.za",
-      },
-      {
-        name: "Asad Jeewa",
-        role: "Lecturer",
-        email: "asad.jeewa@uct.ac.za",
-      },
-      {
-        name: "Unays Bhad",
-        role: "Lecturer",
-        email: "BHDUNA001@myuct.ac.za",
-      },
-      {
-        name: "Sick notes",
-        role: "Medical certificate submission",
-        email: "sick-csc1016s@cs.uct.ac.za",
-      },
-    ],
-    lectureInfo:
-      "Blended learning — daily video lectures Mon–Thu on Amathuba, plus one face-to-face session/week: Mon 12:00–13:00 (owner's intended pick, chosen to resolve a clash with MAM2012S; Amathuba group sign-up governs, not PeopleSoft/SEAT), JD LT2. Plus weekly practicals from Mon 3 Aug (slot tbc).",
-    assessmentWeights: [
-      { label: "Practical average", weight: 0.1 },
-      { label: "Theory test average", weight: 0.15 },
-      { label: "Practical test average", weight: 0.15 },
-      { label: "Exam", weight: 0.6 },
-    ],
-    finalMarkFormula:
-      "Final = 0.10 × practical avg + 0.15 × theory test avg + 0.15 × practical test avg + 0.60 × exam",
-    dpRules: [
-      "Practical test average of at least 50%",
-      "(3/5 × practical average + 2/5 × practical test average) ≥ 45%",
-    ],
-  },
-  {
     code: "MAM2013S",
     title: "MAM2013S (2IA)",
     accent: "mam",
@@ -103,7 +52,7 @@ export const courses: Course[] = [
     },
     contacts: [],
     lectureInfo:
-      "Tue, some Wed, Fri, 12:00–12:45, M320. First lecture Tue 28 Jul. Tutorial/workshop (compulsory): Thu 14:00–15:00, venue TBC — confirmed via Amathuba group sign-up, changeable until Wed 29 Jul 23:00. None in week 1; first tutorial Thu 6 Aug.",
+      "Tue, some Wed, Fri, 12:00–12:45, M320. First lecture Tue 28 Jul. Tutorial/workshop (compulsory): Thu 14:00–15:00, M200 — confirmed via Amathuba group sign-up, changeable until Wed 29 Jul 23:00. None in week 1; first tutorial Thu 6 Aug.",
     assessmentWeights: [
       { label: "Test 1 (of class record)", weight: 0.5 },
       { label: "Test 2 (of class record)", weight: 0.5 },
@@ -160,7 +109,7 @@ export const courses: Course[] = [
     },
     contacts: [],
     lectureInfo:
-      "Tue, Fri, and some Wednesdays, 11:00–11:45 (Period 4), M320. Wednesdays: 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Tutorial (compulsory): Fri 14:00–15:00, Hahn 4G — confirmed via Amathuba group sign-up (30/30, full). No face-to-face tutorial in week 1 — complete the tutorial sheet in your own time instead.",
+      "Tue and Wed, LS 2D; Fri, LS 2A. 11:00–11:45 (Period 4). Wednesdays: 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Tutorial (compulsory): Fri 14:00–15:00, Hahn 4G — confirmed via Amathuba group sign-up (30/30, full). No face-to-face tutorial in week 1 — complete the tutorial sheet in your own time instead.",
     assessmentWeights: [
       { label: "Tutorial Tests", weight: 0.1 },
       { label: "Test 1", weight: 0.45 },

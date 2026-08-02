@@ -6,7 +6,6 @@ import type { AccentToken } from "@/data/types";
 
 const glowRgb: Record<AccentToken | "neutral", string> = {
   sta: "76, 154, 255",
-  csc: "61, 214, 140",
   mam: "192, 132, 252",
   ra: "45, 212, 191",
   de: "163, 230, 53",

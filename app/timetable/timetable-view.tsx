@@ -118,11 +118,6 @@ function SessionContent({
       <span className="truncate text-[11px] leading-tight text-muted">
         {session.venue}
       </span>
-      {session.note && (
-        <span className="text-[10px] leading-tight text-muted/80">
-          {session.note}
-        </span>
-      )}
     </motion.div>
   );
 }

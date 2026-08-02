@@ -8,7 +8,7 @@ export const timetable: Session[] = [
     day: "Mon",
     start: "08:00",
     end: "08:45",
-    venue: "PD Hahn 2",
+    venue: "JD LT 1",
   },
   {
     courseCode: "STA2005S",
@@ -16,7 +16,7 @@ export const timetable: Session[] = [
     day: "Tue",
     start: "08:00",
     end: "08:45",
-    venue: "PD Hahn 2",
+    venue: "JD LT 1",
   },
   {
     courseCode: "STA2005S",
@@ -24,7 +24,7 @@ export const timetable: Session[] = [
     day: "Wed",
     start: "08:00",
     end: "08:45",
-    venue: "PD Hahn 2",
+    venue: "JD LT 1",
   },
   {
     courseCode: "STA2005S",
@@ -32,7 +32,7 @@ export const timetable: Session[] = [
     day: "Thu",
     start: "08:00",
     end: "08:45",
-    venue: "PD Hahn 2",
+    venue: "JD LT 1",
   },
   {
     courseCode: "STA2005S",
@@ -40,7 +40,7 @@ export const timetable: Session[] = [
     day: "Fri",
     start: "08:00",
     end: "08:45",
-    venue: "PD Hahn 2",
+    venue: "JD LT 1",
   },
   {
     courseCode: "STA2005S",
@@ -57,27 +57,6 @@ export const timetable: Session[] = [
     start: "14:00",
     end: "15:00",
     venue: "Scilab D",
-  },
-
-  // CSC1016S — Computer Science
-  {
-    courseCode: "CSC1016S",
-    kind: "lecture",
-    day: "Mon",
-    start: "12:00",
-    end: "13:00",
-    venue: "JD LT2",
-    note: "Owner's intended pick as of 2026-07-29, chosen specifically to resolve the Tue 11:00 clash with MAM2012S — not yet re-confirmed on Amathuba. Ignore PeopleSoft/SEAT timetable per the convenor's announcement; whichever Amathuba group you join governs. 6 sessions were originally on offer (11am/12pm, Mon–Wed); re-verify this Monday slot is still open when you pick it on Amathuba.",
-  },
-  {
-    courseCode: "CSC1016S",
-    kind: "prac",
-    day: "Mon",
-    start: "14:00",
-    end: "16:00",
-    venue: "SCILAB (TBC)",
-    tbc: true,
-    note: "Weekly practicals start Mon 3 Aug; multiple sessions during the week, exact slot/venue/sign-up TBC — details due out during that week.",
   },
 
   // MAM2013S (2IA)
@@ -113,8 +92,8 @@ export const timetable: Session[] = [
     day: "Thu",
     start: "14:00",
     end: "15:00",
-    venue: "TBC",
-    note: "Confirmed via Amathuba group sign-up (48/60), changeable until Wed 29 Jul 23:00. Venue not yet shown. None in week 1; first tutorial Thu 6 Aug.",
+    venue: "M200",
+    note: "Confirmed via Amathuba group sign-up (48/60), changeable until Wed 29 Jul 23:00. None in week 1; first tutorial Thu 6 Aug.",
   },
 
   // MAM2014S (2RA) — Real Analysis
@@ -152,7 +131,7 @@ export const timetable: Session[] = [
       "2026-09-30",
       "2026-10-14",
     ],
-    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot. Shares this Wed Period-4/M320 slot with MAM2012S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware. See the Timetable page's \"This Wednesday\" checker for which course it actually is in any given week.",
+    note: "Only on 29 Jul, 12 Aug, 19 Aug, 2 Sep, 23 Sep, 30 Sep, 14 Oct — not a fixed weekly slot. Shares this Wed Period-4 slot with MAM2012S's LS 2D Wed lecture, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware. See the Timetable page's \"This Wednesday\" checker for which course it actually is in any given week.",
   },
   {
     courseCode: "MAM2014S",
@@ -171,7 +150,7 @@ export const timetable: Session[] = [
     day: "Tue",
     start: "11:00",
     end: "11:45",
-    venue: "M320",
+    venue: "LS 2D",
     note: "Period 4.",
   },
   {
@@ -180,7 +159,7 @@ export const timetable: Session[] = [
     day: "Fri",
     start: "11:00",
     end: "11:45",
-    venue: "M320",
+    venue: "LS 2A",
     note: "Period 4.",
   },
   {
@@ -189,9 +168,9 @@ export const timetable: Session[] = [
     day: "Wed",
     start: "11:00",
     end: "11:45",
-    venue: "M320",
+    venue: "LS 2D",
     dates: ["2026-08-05", "2026-08-26", "2026-09-16", "2026-10-07", "2026-10-21"],
-    note: "Not every week — only 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Shares this Wed Period-4/M320 slot with MAM2014S, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware. See the Timetable page's \"This Wednesday\" checker for which course it actually is in any given week.",
+    note: "Not every week — only 5 Aug, 26 Aug, 16 Sep, 7 Oct, 21 Oct. Shares this Wed Period-4 slot with MAM2014S's M320 Wed lecture, but the two courses' specific Wednesdays never actually coincide (they alternate) — the weekly clash flag this pair triggers is a false positive, since clash detection here isn't date-aware. See the Timetable page's \"This Wednesday\" checker for which course it actually is in any given week.",
   },
   {
     courseCode: "MAM2012S",
